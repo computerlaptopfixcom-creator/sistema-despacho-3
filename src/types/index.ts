@@ -73,3 +73,15 @@ export type Appointment = {
   estado: AppointmentStatus;
   notas?: string;
 };
+
+export type User = {
+  id: string;
+  nombre: string;
+  email: string;
+  telefono?: string;
+  rol: 'admin' | 'contador';
+  activo: boolean;
+  visible: boolean;
+  disponibilidad: string;
+  fechaAlta: string;
+};

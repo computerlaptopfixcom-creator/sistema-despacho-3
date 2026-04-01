@@ -9,6 +9,7 @@ import Visita from './views/Visita';
 import Catalogo from './views/Catalogo';
 import Reportes from './views/Reportes';
 import Agenda from './views/Agenda';
+import Empleados from './views/Empleados';
 import AgendarPublico from './views/AgendarPublico';
 import Login from './views/Login';
 import './App.css';
@@ -45,6 +46,7 @@ function AdminLayout() {
           <Route path="/catalogo" element={<Catalogo />} />
           <Route path="/reportes" element={<Reportes />} />
           <Route path="/agenda" element={<Agenda />} />
+          <Route path="/empleados" element={<Empleados />} />
         </Routes>
       </main>
     </div>

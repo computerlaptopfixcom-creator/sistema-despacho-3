@@ -19,6 +19,19 @@ export async function initDB(retries = 5) {
           fecha_alta TIMESTAMPTZ DEFAULT NOW()
         );
 
+        CREATE TABLE IF NOT EXISTS users (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          nombre TEXT NOT NULL,
+          email TEXT UNIQUE NOT NULL,
+          password TEXT NOT NULL DEFAULT 'password123',
+          telefono TEXT DEFAULT '',
+          rol TEXT DEFAULT 'contador',
+          activo BOOLEAN DEFAULT true,
+          visible BOOLEAN DEFAULT true,
+          disponibilidad TEXT DEFAULT 'Disponible',
+          fecha_alta TIMESTAMPTZ DEFAULT NOW()
+        );
+
         CREATE TABLE IF NOT EXISTS services (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           nombre TEXT NOT NULL,
@@ -93,6 +106,16 @@ export async function initDB(retries = 5) {
           ('Consulta contable', 'Fiscal', 'Análisis contable', 500, 'Christian Huerta', true),
           ('Consulta legal y civil', 'General', 'Asesoría en asuntos legales y civiles', 500, 'Christian Huerta', true),
           ('Consulta financiera', 'General', 'Análisis de temas financieros', 500, 'Gerardo Huerta', true);
+        `);
+      }
+
+      // Seed default users if empty
+      const { rows: userCount } = await pool.query('SELECT COUNT(*) FROM users');
+      if (parseInt(userCount[0].count) === 0) {
+        await pool.query(`
+          INSERT INTO users (nombre, email, telefono, rol, disponibilidad) VALUES
+          ('Gerardo Huerta', 'cita.gerardo@despachofiscal2087.com.mx', '+526565334271', 'contador', 'Disponible'),
+          ('Christian Huerta', 'cita.christian@despachofiscal2087.com.mx', '+526563743396', 'contador', 'Disponible')
         `);
       }
 

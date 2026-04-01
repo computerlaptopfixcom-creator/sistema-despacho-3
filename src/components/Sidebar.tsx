@@ -29,6 +29,10 @@ export default function Sidebar() {
           <Calendar />
           Agenda
         </NavLink>
+        <NavLink to="/empleados" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
+          <Users />
+          Empleados
+        </NavLink>
       </nav>
       <div className="sidebar-footer">
         © 2026 Despacho Fiscal

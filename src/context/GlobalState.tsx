@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import type { Client, Visit, Service, Payment, Appointment } from '../types';
+import type { Client, Visit, Service, Payment, Appointment, User } from '../types';
 
 type Database = {
   clients: Client[];
@@ -8,6 +8,7 @@ type Database = {
   services: Service[];
   payments: Payment[];
   appointments: Appointment[];
+  users: User[];
 };
 
 const emptyDB: Database = {
@@ -16,6 +17,7 @@ const emptyDB: Database = {
   services: [],
   payments: [],
   appointments: [],
+  users: [],
 };
 
 type GlobalStateContextType = {
@@ -33,6 +35,9 @@ type GlobalStateContextType = {
   addAppointment: (appt: Appointment) => void;
   updateAppointment: (id: string, updates: Partial<Appointment>) => void;
   deleteAppointment: (id: string) => void;
+  addUser: (user: User) => void;
+  updateUser: (id: string, updates: Partial<User>) => void;
+  deleteUser: (id: string) => void;
 };
 
 const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
@@ -58,9 +63,10 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       api('services'),
       api('payments'),
       api('appointments'),
+      api('users'),
     ])
-      .then(([clients, visits, services, payments, appointments]) => {
-        setDb({ clients, visits, services, payments, appointments });
+      .then(([clients, visits, services, payments, appointments, users]) => {
+        setDb({ clients, visits, services, payments, appointments, users });
       })
       .catch(err => {
         console.error('Failed to load data:', err);
@@ -168,6 +174,31 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       .catch(console.error);
   }, []);
 
+  // --- USERS ---
+  const addUser = useCallback((user: User) => {
+    api('users', { method: 'POST', body: JSON.stringify(user) })
+      .then(saved => setDb(prev => ({ ...prev, users: [...prev.users, saved] })))
+      .catch(console.error);
+  }, []);
+
+  const updateUser = useCallback((id: string, updates: Partial<User>) => {
+    api(`users/${id}`, { method: 'PUT', body: JSON.stringify(updates) })
+      .then(() => setDb(prev => ({
+        ...prev,
+        users: prev.users.map(u => (u.id === id ? { ...u, ...updates } : u)),
+      })))
+      .catch(console.error);
+  }, []);
+
+  const deleteUser = useCallback((id: string) => {
+    api(`users/${id}`, { method: 'DELETE' })
+      .then(() => setDb(prev => ({
+        ...prev,
+        users: prev.users.filter(u => u.id !== id),
+      })))
+      .catch(console.error);
+  }, []);
+
   return (
     <GlobalStateContext.Provider
       value={{
@@ -176,6 +207,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         addService, updateService, deleteService,
         addPayment,
         addAppointment, updateAppointment, deleteAppointment,
+        addUser, updateUser, deleteUser,
       }}
     >
       {children}

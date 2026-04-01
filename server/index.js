@@ -10,6 +10,7 @@ import paymentsRouter from './routes/payments.js';
 import appointmentsRouter from './routes/appointments.js';
 import authRouter from './routes/auth.js';
 import documentsRouter from './routes/documents.js';
+import usersRouter from './routes/users.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/services', servicesRouter);
 app.use('/api/payments', paymentsRouter);
 app.use('/api/appointments', appointmentsRouter);
 app.use('/api/documents', documentsRouter);
+app.use('/api/users', usersRouter);
 
 // Servir archivos estáticos del expediente (escaneos)
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
