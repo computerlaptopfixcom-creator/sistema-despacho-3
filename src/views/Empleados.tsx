@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { 
   Search, Plus, MoreHorizontal,
-  User as UserIcon, Eye, EyeOff, Edit2, Trash2, X, Save
+  User as UserIcon, Eye, EyeOff, Edit2, Trash2, X, Save, KeyRound
 } from 'lucide-react';
 import { useGlobalState } from '../context/GlobalState';
 
@@ -11,6 +11,7 @@ const emptyForm = {
   telefono: '',
   rol: 'contador' as const,
   disponibilidad: 'Disponible',
+  password: '',
 };
 
 export default function Empleados() {
@@ -19,6 +20,7 @@ export default function Empleados() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [showPass, setShowPass] = useState(false);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
@@ -40,6 +42,7 @@ export default function Empleados() {
       telefono: user.telefono || '',
       rol: user.rol || 'contador',
       disponibilidad: user.disponibilidad || 'Disponible',
+      password: '',  // no mostramos la pass existente por seguridad
     });
     setEditingId(user.id);
     setShowModal(true);
@@ -48,14 +51,20 @@ export default function Empleados() {
 
   const handleSave = () => {
     if (!form.nombre.trim() || !form.email.trim()) return;
+    if (!editingId && !form.password.trim()) return; // al crear, la pass es obligatoria
 
     if (editingId) {
-      updateUser(editingId, {
+      const updates: any = {
         nombre: form.nombre,
         email: form.email,
         telefono: form.telefono,
         disponibilidad: form.disponibilidad,
-      });
+      };
+      // Solo actualizar password si se escribió algo
+      if (form.password.trim()) {
+        updates.password = form.password;
+      }
+      updateUser(editingId, updates);
     } else {
       addUser({
         id: crypto.randomUUID(),
@@ -67,7 +76,8 @@ export default function Empleados() {
         visible: true,
         disponibilidad: form.disponibilidad,
         fechaAlta: new Date().toISOString(),
-      });
+        password: form.password,
+      } as any);
     }
     setShowModal(false);
     setEditingId(null);
@@ -258,13 +268,39 @@ export default function Empleados() {
                   </select>
                 </label>
               </div>
+
+              <label className="emp-field">
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, color: '#475569' }}>
+                  🔑 Contraseña de acceso
+                  {editingId && <span style={{ fontWeight: 400, color: '#94a3b8', fontSize: 12 }}>(dejar vacío para no cambiar)</span>}
+                </span>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={(e: any) => setForm({ ...form, password: e.target.value })}
+                    placeholder={editingId ? '••••••••' : 'Mínimo 6 caracteres'}
+                    style={{ paddingRight: 42 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    style={{
+                      position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', padding: 0,
+                    }}
+                  >
+                    {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </label>
             </div>
             <div className="emp-modal-footer">
               <button className="emp-btn-cancel" onClick={() => setShowModal(false)}>Cancelar</button>
               <button
                 className="btn-primary"
                 onClick={handleSave}
-                disabled={!form.nombre.trim() || !form.email.trim()}
+                disabled={!form.nombre.trim() || !form.email.trim() || (!editingId && !form.password.trim())}
               >
                 <Save size={16} />
                 <span>{editingId ? 'Guardar Cambios' : 'Crear Empleado'}</span>
