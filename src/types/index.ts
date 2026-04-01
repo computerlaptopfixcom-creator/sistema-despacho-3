@@ -2,6 +2,7 @@ export type Client = {
   id: string;
   nombre: string;
   telefono: string;
+  email?: string;
   curp?: string;
   notasGenerales?: string;
   fechaAlta: string;
@@ -64,6 +65,7 @@ export type Appointment = {
   clienteId?: string;
   clienteNombre: string;
   clienteTelefono: string;
+  clienteEmail?: string;
   fecha: string;
   hora: string;
   motivo: string;

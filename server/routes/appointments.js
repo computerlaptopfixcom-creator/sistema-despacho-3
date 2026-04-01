@@ -8,6 +8,7 @@ const mapRow = (r) => ({
   clienteId: r.cliente_id || undefined,
   clienteNombre: r.cliente_nombre,
   clienteTelefono: r.cliente_telefono,
+  clienteEmail: r.cliente_email,
   fecha: typeof r.fecha === 'object' ? r.fecha.toISOString().split('T')[0] : r.fecha,
   hora: r.hora,
   motivo: r.motivo || 'Consulta general',
@@ -25,35 +26,27 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST create (con auto-creación de cliente)
+// POST create (sin auto-creación de cliente)
 router.post('/', async (req, res) => {
   try {
     const { id, fecha, hora, motivo, estado, notas } = req.body;
-    let { clienteId, clienteNombre, clienteTelefono } = req.body;
+    let { clienteId, clienteNombre, clienteTelefono, clienteEmail } = req.body;
 
-    // Buscar si el cliente ya existe por ID, teléfono o nombre exacto
-    if (!clienteId) {
-      const clientCheck = await pool.query(
-        'SELECT id FROM clients WHERE telefono = $1 OR nombre = $2 LIMIT 1',
-        [clienteTelefono, clienteNombre]
-      );
-      if (clientCheck.rows.length > 0) {
-        clienteId = clientCheck.rows[0].id; // Reutilizar expediente existente
-      } else {
-        // Crear cliente automático
-        const newClient = await pool.query(
-          `INSERT INTO clients (nombre, telefono, notas_generales) 
-           VALUES ($1, $2, 'Autogenerado desde cita pública') RETURNING id`,
-          [clienteNombre, clienteTelefono]
-        );
-        clienteId = newClient.rows[0].id;
-      }
+    // Asignación de atiendeId basado en el servicio (motivo)
+    let atiendeId = null;
+    if (motivo) {
+        const { rows: srvRows } = await pool.query('SELECT atiende FROM services WHERE nombre = $1', [motivo]);
+        if (srvRows.length > 0 && srvRows[0].atiende) {
+            const atiendeName = srvRows[0].atiende.split(' / ')[0].trim();
+            const { rows: userRows } = await pool.query('SELECT id FROM users WHERE nombre ILIKE $1', [`%${atiendeName}%`]);
+            if (userRows.length > 0) atiendeId = userRows[0].id;
+        }
     }
 
     const { rows } = await pool.query(
-      `INSERT INTO appointments (id, cliente_id, cliente_nombre, cliente_telefono, fecha, hora, motivo, estado, notas)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [id, clienteId, clienteNombre, clienteTelefono, fecha, hora, motivo || 'Consulta general', estado || 'Programada', notas || '']
+      `INSERT INTO appointments (id, cliente_id, cliente_nombre, cliente_telefono, cliente_email, fecha, hora, motivo, estado, notas, assigned_to)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
+      [id, clienteId || null, clienteNombre, clienteTelefono, clienteEmail || '', fecha, hora, motivo || 'Consulta general', estado || 'Programada', notas || '', atiendeId]
     );
     res.status(201).json(mapRow(rows[0]));
   } catch (err) {
@@ -64,7 +57,7 @@ router.post('/', async (req, res) => {
 // PUT update
 router.put('/:id', async (req, res) => {
   try {
-    const { estado, notas, clienteNombre, clienteTelefono, motivo } = req.body;
+    const { estado, notas, clienteNombre, clienteTelefono, clienteEmail, motivo } = req.body;
     const sets = [];
     const vals = [];
     let i = 1;
@@ -73,6 +66,7 @@ router.put('/:id', async (req, res) => {
     if (notas !== undefined) { sets.push(`notas=$${i++}`); vals.push(notas); }
     if (clienteNombre !== undefined) { sets.push(`cliente_nombre=$${i++}`); vals.push(clienteNombre); }
     if (clienteTelefono !== undefined) { sets.push(`cliente_telefono=$${i++}`); vals.push(clienteTelefono); }
+    if (clienteEmail !== undefined) { sets.push(`cliente_email=$${i++}`); vals.push(clienteEmail); }
     if (motivo !== undefined) { sets.push(`motivo=$${i++}`); vals.push(motivo); }
 
     if (sets.length > 0) {

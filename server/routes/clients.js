@@ -11,6 +11,7 @@ router.get('/', async (req, res) => {
       id: r.id,
       nombre: r.nombre,
       telefono: r.telefono,
+      email: r.email || '',
       curp: r.curp || '',
       notasGenerales: r.notas_generales || '',
       fechaAlta: r.fecha_alta,
@@ -23,15 +24,18 @@ router.get('/', async (req, res) => {
 // POST create
 router.post('/', async (req, res) => {
   try {
-    const { id, nombre, telefono, curp, notasGenerales, fechaAlta } = req.body;
+    let { id, nombre, telefono, email, curp, notasGenerales, fechaAlta } = req.body;
+    let assigned_to = null;
+    if (req.user && req.user.rol !== 'ADMIN') assigned_to = req.user.id;
+
     const { rows } = await pool.query(
-      `INSERT INTO clients (id, nombre, telefono, curp, notas_generales, fecha_alta)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [id, nombre, telefono, curp || '', notasGenerales || '', fechaAlta || new Date().toISOString()]
+      `INSERT INTO clients (id, nombre, telefono, email, curp, notas_generales, fecha_alta, assigned_to)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [id, nombre, telefono, email || '', curp || '', notasGenerales || '', fechaAlta || new Date().toISOString(), assigned_to]
     );
     const r = rows[0];
     res.status(201).json({
-      id: r.id, nombre: r.nombre, telefono: r.telefono,
+      id: r.id, nombre: r.nombre, telefono: r.telefono, email: r.email,
       curp: r.curp, notasGenerales: r.notas_generales, fechaAlta: r.fecha_alta,
     });
   } catch (err) {
@@ -42,11 +46,11 @@ router.post('/', async (req, res) => {
 // PUT update
 router.put('/:id', async (req, res) => {
   try {
-    const { nombre, telefono, curp, notasGenerales } = req.body;
+    const { nombre, telefono, email, curp, notasGenerales } = req.body;
     await pool.query(
       `UPDATE clients SET nombre=COALESCE($1,nombre), telefono=COALESCE($2,telefono),
-       curp=COALESCE($3,curp), notas_generales=COALESCE($4,notas_generales) WHERE id=$5`,
-      [nombre, telefono, curp, notasGenerales, req.params.id]
+       email=COALESCE($3,email), curp=COALESCE($4,curp), notas_generales=COALESCE($5,notas_generales) WHERE id=$6`,
+      [nombre, telefono, email, curp, notasGenerales, req.params.id]
     );
     res.json({ ok: true });
   } catch (err) {

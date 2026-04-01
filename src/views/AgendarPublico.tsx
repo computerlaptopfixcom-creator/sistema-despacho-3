@@ -24,6 +24,7 @@ export default function AgendarPublico() {
   const [step, setStep] = useState(1);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
+  const [email, setEmail] = useState('');
   const [motivo, setMotivo] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedHora, setSelectedHora] = useState('');
@@ -67,7 +68,7 @@ export default function AgendarPublico() {
             .map(a => ({ fecha: a.fecha, hora: a.hora }))
         );
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [weekOffset]);
 
   const isSlotTaken = (fecha: string, hora: string) =>
@@ -103,6 +104,7 @@ export default function AgendarPublico() {
           id: crypto.randomUUID(),
           clienteNombre: nombre.trim(),
           clienteTelefono: telefono.trim(),
+          clienteEmail: email.trim(),
           fecha: selectedDate,
           hora: selectedHora,
           motivo: motivo || 'Consulta general',
@@ -130,12 +132,13 @@ export default function AgendarPublico() {
           <div className="pub-summary">
             <div><strong>Nombre:</strong> {nombre}</div>
             <div><strong>Teléfono:</strong> {telefono}</div>
+            <div><strong>Correo:</strong> {email || 'No proporcionado'}</div>
             <div><strong>Fecha:</strong> {new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</div>
             <div><strong>Hora:</strong> {selectedHora}</div>
             <div><strong>Motivo:</strong> {motivo || 'Consulta general'}</div>
           </div>
           <p className="pub-muted">Le contactaremos por teléfono para confirmar su cita.</p>
-          <button className="pub-btn pub-btn-primary" onClick={() => { setDone(false); setStep(1); setNombre(''); setTelefono(''); setMotivo(''); setSelectedDate(''); setSelectedHora(''); }}>
+          <button className="pub-btn pub-btn-primary" onClick={() => { setDone(false); setStep(1); setNombre(''); setTelefono(''); setEmail(''); setMotivo(''); setSelectedDate(''); setSelectedHora(''); }}>
             Agendar otra cita
           </button>
         </div>
@@ -185,6 +188,15 @@ export default function AgendarPublico() {
               />
             </div>
             <div className="pub-form-group">
+              <label>Correo electrónico *</label>
+              <input
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="Ej: juan.perez@email.com"
+                type="email"
+              />
+            </div>
+            <div className="pub-form-group">
               <label>¿Qué servicio necesita?</label>
               <select value={motivo} onChange={e => setMotivo(e.target.value)}>
                 <option value="">Seleccione un motivo...</option>
@@ -195,7 +207,7 @@ export default function AgendarPublico() {
             </div>
             <button
               className="pub-btn pub-btn-primary pub-btn-full"
-              disabled={!nombre.trim() || !telefono.trim()}
+              disabled={!nombre.trim() || !telefono.trim() || !email.trim()}
               onClick={() => setStep(2)}
             >
               Siguiente →

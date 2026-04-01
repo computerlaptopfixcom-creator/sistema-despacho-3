@@ -54,7 +54,7 @@ function AdminLayout() {
 export default function App() {
   const location = useLocation();
   const isPublic = location.pathname === '/agendar';
-  
+
   const [isAuthenticated, setIsAuthenticated] = useState(
     localStorage.getItem('despacho3_token') === 'AUTH_GRANTED'
   );
@@ -65,13 +65,13 @@ export default function App() {
       fetch('/api/auth/verify', {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('despacho3_token')}` }
       })
-      .then(res => {
-        if (!res.ok) {
-          localStorage.removeItem('despacho3_token');
-          setIsAuthenticated(false);
-        }
-      })
-      .catch(() => {});
+        .then(res => {
+          if (!res.ok) {
+            localStorage.removeItem('despacho3_token');
+            setIsAuthenticated(false);
+          }
+        })
+        .catch(() => { });
     }
   }, [location.pathname]);
 

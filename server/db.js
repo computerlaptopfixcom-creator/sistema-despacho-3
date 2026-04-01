@@ -31,6 +31,7 @@ export async function initDB(retries = 5) {
         
         -- Ejecución manual de alter table por seguridad para DB en producción
         ALTER TABLE services ADD COLUMN IF NOT EXISTS atiende TEXT DEFAULT '';
+        ALTER TABLE clients ADD COLUMN IF NOT EXISTS email TEXT DEFAULT '';
 
         CREATE TABLE IF NOT EXISTS visits (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -68,6 +69,8 @@ export async function initDB(retries = 5) {
           estado TEXT DEFAULT 'Programada',
           notas TEXT DEFAULT ''
         );
+
+        ALTER TABLE appointments ADD COLUMN IF NOT EXISTS cliente_email TEXT DEFAULT '';
 
         CREATE TABLE IF NOT EXISTS client_documents (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

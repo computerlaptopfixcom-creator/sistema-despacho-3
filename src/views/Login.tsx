@@ -19,7 +19,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
       });
 
       const data = await res.json();
-      
+
       if (res.ok && data.ok) {
         localStorage.setItem('despacho3_token', data.token);
         onLogin();

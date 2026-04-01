@@ -11,6 +11,7 @@ export default function Clientes() {
   const [showNewClient, setShowNewClient] = useState(false);
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
+  const [newEmail, setNewEmail] = useState('');
 
   const filteredClients = useMemo(() => {
     if (!searchQuery.trim()) return db.clients;
@@ -41,11 +42,13 @@ export default function Clientes() {
       id: crypto.randomUUID(),
       nombre: newName.trim(),
       telefono: newPhone.trim(),
+      email: newEmail.trim(),
       fechaAlta: new Date().toISOString(),
     };
     addClient(client);
     setNewName('');
     setNewPhone('');
+    setNewEmail('');
     setShowNewClient(false);
     navigate(`/clientes/${client.id}`);
   };
@@ -138,6 +141,15 @@ export default function Clientes() {
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
                 autoFocus
+              />
+            </div>
+            <div className="form-group">
+              <label>Correo Electrónico</label>
+              <input
+                type="email"
+                placeholder="Ej: maria.lopez@email.com"
+                value={newEmail}
+                onChange={e => setNewEmail(e.target.value)}
               />
             </div>
             <div className="form-group">
