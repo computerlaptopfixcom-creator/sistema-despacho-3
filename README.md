@@ -1,0 +1,97 @@
+# 🏢 Sistema Despacho Fiscal 2087
+
+Sistema de gestión interna y agendamiento público para el Despacho Fiscal 2087. 
+Construido con una arquitectura Full-Stack profesional preparada para despliegue en VPS (EasyPanel).
+
+![Banner](src/assets/hero.png)
+
+## 🚀 Características Principales
+
+### 1. Panel Administrativo (Privado)
+Protegido por contraseña global (`ADMIN_PASSWORD`), permite gestionar la operación total del despacho sin necesidad de expedientes de papel:
+- **Gestión de Clientes**: Expedientes centralizados con historial clínico/fiscal.
+- **Control de Visitas**: Registro de consultas detallado con servicios brindados.
+- **Finanzas y Pagos**: Seguimiento de abonos, saldos pendientes y generación de **Recibos PDF**.
+- **Agenda Inteligente**: Visualización del calendario por semana y días.
+- **Catálogo de Servicios**: Precios y descripciones actualizables.
+
+### 2. Portal de Clientes (Público)
+- **Ruta Autónoma**: `/agendar`
+- **Mobile-first**: Formulario de 3 pasos diseñado para facilidad de uso (edad 55-60+).
+- **Sincronización en Tiempo Real**: Evita dobles reservas leyendo desde PostgreSQL de forma instantánea.
+
+---
+
+## 💻 Stack Tecnológico
+
+- **Frontend**: React 18 + TypeScript + Vite
+- **Estilos**: Vanilla CSS (`index.css`) con variables de diseño.
+- **Backend API**: Node.js + Express
+- **Base de Datos**: PostgreSQL (con autogeneración de esquema y seed de servicios).
+- **Contenedores**: Docker (Dockerfile multi-stage para compilar React y servir Express).
+
+---
+
+## 🛠️ Arquitectura de Software
+
+El sistema consolidó toda su información desde un estado local (`localStorage`) hacia una base de datos relacional robusta (**PostgreSQL**).
+
+El flujo de aplicación es:
+```text
+[Cliente Web / Celular] 
+         ↓ (Peticiones REST)
+[Servidor Node/Express en Puerto 3001]
+         ↓ (Consultas SQL)
+[PostgreSQL Database]
+```
+
+---
+
+## 🌐 Configuración y Despliegue en EasyPanel
+
+El repositorio incluye un `Dockerfile` optimizado para **EasyPanel**. El despliegue toma menos de 2 minutos.
+
+### Pasos:
+1. Crea un servicio de base de datos **PostgreSQL** en EasyPanel.
+2. Crea un servicio tipo **App**.
+3. En la sección *Source*, selecciona la rama `main` de este repositorio en GitHub.
+4. En **Environment**, agrega las siguientes variables:
+
+```env
+# URL de conexión (obténla del servicio PostgreSQL de EasyPanel)
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+# Contraseña para acceder al panel administrativo
+ADMIN_PASSWORD=TuContraseñaSecreta
+```
+
+5. Haz clic en **Deploy**. 
+
+> **Nota**: El sistema incluye "Autoseeding". La primera vez que arranque, la base de datos creará las tablas de *clients*, *visits*, *services*, *payments* y *appointments*, y precargará los servicios principales de diagnóstico de pensión.
+
+---
+
+## 💻 Desarrollo Local
+
+Si deseas clonar y correr el proyecto en tu máquina local:
+
+1. Instala dependencias:
+```bash
+npm install
+```
+
+2. Necesitas una instancia local de PostgreSQL. Crea una base de datos y define tu archivo `.env` o la variable de entorno temporal.
+
+3. Corre el servidor backend:
+```bash
+npm run server
+```
+
+4. En otra terminal, corre el entorno de desarrollo de Vite (que hace proxy automático a `:3001`):
+```bash
+npm run dev
+```
+
+---
+
+**© 2026 Desarrollado por David Hielo para Despacho Fiscal 2087.**
