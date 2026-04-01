@@ -9,6 +9,8 @@ services:
       - ADMIN_PASSWORD=DespachoAdmin2087!
     ports:
       - "3001:3001"
+    volumes:
+      - despacho3-uploads:/app/uploads
     depends_on:
       despacho3-db:
         condition: service_healthy
@@ -34,6 +36,7 @@ services:
 
 volumes:
   despacho3-data:
+  despacho3-uploads:
 
 networks:
   despacho-net:

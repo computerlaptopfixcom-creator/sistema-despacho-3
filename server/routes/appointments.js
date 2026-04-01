@@ -25,14 +25,35 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST create
+// POST create (con auto-creación de cliente)
 router.post('/', async (req, res) => {
   try {
-    const { id, clienteId, clienteNombre, clienteTelefono, fecha, hora, motivo, estado, notas } = req.body;
+    const { id, fecha, hora, motivo, estado, notas } = req.body;
+    let { clienteId, clienteNombre, clienteTelefono } = req.body;
+
+    // Buscar si el cliente ya existe por ID, teléfono o nombre exacto
+    if (!clienteId) {
+      const clientCheck = await pool.query(
+        'SELECT id FROM clients WHERE telefono = $1 OR nombre = $2 LIMIT 1',
+        [clienteTelefono, clienteNombre]
+      );
+      if (clientCheck.rows.length > 0) {
+        clienteId = clientCheck.rows[0].id; // Reutilizar expediente existente
+      } else {
+        // Crear cliente automático
+        const newClient = await pool.query(
+          `INSERT INTO clients (nombre, telefono, notas_generales) 
+           VALUES ($1, $2, 'Autogenerado desde cita pública') RETURNING id`,
+          [clienteNombre, clienteTelefono]
+        );
+        clienteId = newClient.rows[0].id;
+      }
+    }
+
     const { rows } = await pool.query(
       `INSERT INTO appointments (id, cliente_id, cliente_nombre, cliente_telefono, fecha, hora, motivo, estado, notas)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [id, clienteId || null, clienteNombre, clienteTelefono, fecha, hora, motivo || 'Consulta general', estado || 'Programada', notas || '']
+      [id, clienteId, clienteNombre, clienteTelefono, fecha, hora, motivo || 'Consulta general', estado || 'Programada', notas || '']
     );
     res.status(201).json(mapRow(rows[0]));
   } catch (err) {

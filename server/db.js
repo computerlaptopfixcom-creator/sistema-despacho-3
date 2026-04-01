@@ -64,6 +64,18 @@ export async function initDB(retries = 5) {
           estado TEXT DEFAULT 'Programada',
           notas TEXT DEFAULT ''
         );
+
+        CREATE TABLE IF NOT EXISTS client_documents (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+          filename TEXT NOT NULL,
+          original_name TEXT NOT NULL,
+          filepath TEXT NOT NULL,
+          mimetype TEXT NOT NULL,
+          size BIGINT NOT NULL,
+          upload_date TIMESTAMPTZ DEFAULT NOW(),
+          uploaded_by TEXT DEFAULT 'Administrador'
+        );
       `);
 
       // Seed default services if empty

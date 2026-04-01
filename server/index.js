@@ -9,6 +9,7 @@ import servicesRouter from './routes/services.js';
 import paymentsRouter from './routes/payments.js';
 import appointmentsRouter from './routes/appointments.js';
 import authRouter from './routes/auth.js';
+import documentsRouter from './routes/documents.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -24,6 +25,10 @@ app.use('/api/visits', visitsRouter);
 app.use('/api/services', servicesRouter);
 app.use('/api/payments', paymentsRouter);
 app.use('/api/appointments', appointmentsRouter);
+app.use('/api/documents', documentsRouter);
+
+// Servir archivos estáticos del expediente (escaneos)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 
 // Serve frontend in production
