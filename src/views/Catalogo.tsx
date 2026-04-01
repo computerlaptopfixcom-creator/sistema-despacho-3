@@ -16,6 +16,7 @@ export default function Catalogo() {
     categoria: 'General' as Service['categoria'],
     descripcion: '',
     precioBase: '',
+    atiende: '',
   });
 
   const filtered = filterCat === 'Todas'
@@ -23,7 +24,7 @@ export default function Catalogo() {
     : db.services.filter(s => s.categoria === filterCat);
 
   const resetForm = () => {
-    setForm({ nombre: '', categoria: 'General', descripcion: '', precioBase: '' });
+    setForm({ nombre: '', categoria: 'General', descripcion: '', precioBase: '', atiende: '' });
     setShowForm(false);
     setEditingId(null);
   };
@@ -39,6 +40,7 @@ export default function Catalogo() {
         categoria: form.categoria,
         descripcion: form.descripcion.trim(),
         precioBase: precio,
+        atiende: form.atiende.trim(),
       });
     } else {
       const service: Service = {
@@ -47,6 +49,7 @@ export default function Catalogo() {
         categoria: form.categoria,
         descripcion: form.descripcion.trim(),
         precioBase: precio,
+        atiende: form.atiende.trim(),
         activo: true,
       };
       addService(service);
@@ -60,6 +63,7 @@ export default function Catalogo() {
       categoria: s.categoria,
       descripcion: s.descripcion,
       precioBase: s.precioBase.toString(),
+      atiende: s.atiende || '',
     });
     setEditingId(s.id);
     setShowForm(true);
@@ -121,6 +125,7 @@ export default function Catalogo() {
                 <tr>
                   <th>Servicio</th>
                   <th>Categoría</th>
+                  <th>Atiende</th>
                   <th>Descripción</th>
                   <th>Precio Base</th>
                   <th>Estado</th>
@@ -137,15 +142,16 @@ export default function Catalogo() {
                       </div>
                     </td>
                     <td><span className={`badge ${getCatBadge(s.categoria)}`}>{s.categoria}</span></td>
+                    <td className="text-secondary">{s.atiende || '—'}</td>
                     <td className="text-secondary text-sm" style={{ maxWidth: 250 }}>{s.descripcion || '—'}</td>
                     <td style={{ fontWeight: 700, fontSize: '1rem' }}>{formatMoney(s.precioBase)}</td>
                     <td>
                       <button
-                        onClick={() => toggleActive(s)}
-                        className={`badge ${s.activo ? 'badge-green' : 'badge-red'}`}
-                        style={{ cursor: 'pointer', border: 'none' }}
+                         onClick={() => toggleActive(s)}
+                         className={`badge ${s.activo ? 'badge-green' : 'badge-red'}`}
+                         style={{ cursor: 'pointer', border: 'none' }}
                       >
-                        {s.activo ? 'Activo' : 'Inactivo'}
+                         {s.activo ? 'Activo' : 'Inactivo'}
                       </button>
                     </td>
                     <td>
@@ -173,7 +179,7 @@ export default function Catalogo() {
       {/* New/Edit Service Modal */}
       {showForm && (
         <div className="modal-overlay" onClick={resetForm}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 500 }}>
             <h2>{editingId ? 'Editar Servicio' : 'Nuevo Servicio'}</h2>
             <div className="form-group">
               <label>Nombre del servicio *</label>
@@ -184,6 +190,16 @@ export default function Catalogo() {
                 autoFocus
               />
             </div>
+            
+            <div className="form-group">
+              <label>¿Quién atiende este servicio?</label>
+              <input
+                value={form.atiende}
+                onChange={e => setForm(p => ({ ...p, atiende: e.target.value }))}
+                placeholder="Ej: Gerardo Huerta / Christian Huerta"
+              />
+            </div>
+
             <div className="form-row">
               <div className="form-group">
                 <label>Categoría *</label>

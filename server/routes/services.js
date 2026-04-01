@@ -9,6 +9,7 @@ const mapRow = (r) => ({
   categoria: r.categoria,
   descripcion: r.descripcion || '',
   precioBase: parseFloat(r.precio_base),
+  atiende: r.atiende || '',
   activo: r.activo,
 });
 
@@ -25,11 +26,11 @@ router.get('/', async (req, res) => {
 // POST create
 router.post('/', async (req, res) => {
   try {
-    const { id, nombre, categoria, descripcion, precioBase, activo } = req.body;
+    const { id, nombre, categoria, descripcion, precioBase, atiende, activo } = req.body;
     const { rows } = await pool.query(
-      `INSERT INTO services (id, nombre, categoria, descripcion, precio_base, activo)
-       VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [id, nombre, categoria || 'General', descripcion || '', precioBase || 0, activo !== false]
+      `INSERT INTO services (id, nombre, categoria, descripcion, precio_base, atiende, activo)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      [id, nombre, categoria || 'General', descripcion || '', precioBase || 0, atiende || '', activo !== false]
     );
     res.status(201).json(mapRow(rows[0]));
   } catch (err) {
@@ -40,12 +41,12 @@ router.post('/', async (req, res) => {
 // PUT update
 router.put('/:id', async (req, res) => {
   try {
-    const { nombre, categoria, descripcion, precioBase, activo } = req.body;
+    const { nombre, categoria, descripcion, precioBase, atiende, activo } = req.body;
     await pool.query(
       `UPDATE services SET nombre=COALESCE($1,nombre), categoria=COALESCE($2,categoria),
        descripcion=COALESCE($3,descripcion), precio_base=COALESCE($4,precio_base),
-       activo=COALESCE($5,activo) WHERE id=$6`,
-      [nombre, categoria, descripcion, precioBase, activo, req.params.id]
+       atiende=COALESCE($5,atiende), activo=COALESCE($6,activo) WHERE id=$7`,
+      [nombre, categoria, descripcion, precioBase, atiende, activo, req.params.id]
     );
     res.json({ ok: true });
   } catch (err) {

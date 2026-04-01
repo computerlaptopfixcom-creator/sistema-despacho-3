@@ -25,8 +25,12 @@ export async function initDB(retries = 5) {
           categoria TEXT NOT NULL DEFAULT 'General',
           descripcion TEXT DEFAULT '',
           precio_base NUMERIC(10,2) NOT NULL DEFAULT 0,
+          atiende TEXT DEFAULT '',
           activo BOOLEAN DEFAULT true
         );
+        
+        -- Ejecución manual de alter table por seguridad para DB en producción
+        ALTER TABLE services ADD COLUMN IF NOT EXISTS atiende TEXT DEFAULT '';
 
         CREATE TABLE IF NOT EXISTS visits (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -82,14 +86,12 @@ export async function initDB(retries = 5) {
       const { rows } = await pool.query('SELECT COUNT(*) FROM services');
       if (parseInt(rows[0].count) === 0) {
         await pool.query(`
-          INSERT INTO services (nombre, categoria, descripcion, precio_base, activo) VALUES
-          ('Diagnóstico de Pensión', 'Pensiones', 'Estudio de semanas cotizadas y modalidad de pensión', 1500, true),
-          ('Trámite de Pensión IMSS', 'Pensiones', 'Gestión completa del trámite de pensión ante el IMSS', 8000, true),
-          ('Corrección de Semanas Cotizadas', 'Pensiones', 'Aclaración y corrección ante IMSS', 3000, true),
-          ('Declaración Anual PF', 'Fiscal', 'Presentación de declaración anual para Persona Física', 800, true),
-          ('Constancia de Situación Fiscal', 'Fiscal', 'Trámite de obtención o actualización', 200, true),
-          ('Alta en el SAT', 'Fiscal', 'Inscripción al RFC y régimen fiscal', 500, true),
-          ('Consultoría General', 'General', 'Asesoría y orientación general', 500, true);
+          INSERT INTO services (nombre, categoria, descripcion, precio_base, atiende, activo) VALUES
+          ('Consulta fiscal', 'Fiscal', 'Consulta especializada en temas fiscales', 500, 'Gerardo Huerta / Christian Huerta', true),
+          ('Consulta en pensiones', 'Pensiones', 'Estudio sobre semanas y modalidad', 500, 'Gerardo Huerta', true),
+          ('Consulta contable', 'Fiscal', 'Análisis contable', 500, 'Christian Huerta', true),
+          ('Consulta legal y civil', 'General', 'Asesoría en asuntos legales y civiles', 500, 'Christian Huerta', true),
+          ('Consulta financiera', 'General', 'Análisis de temas financieros', 500, 'Gerardo Huerta', true);
         `);
       }
 
