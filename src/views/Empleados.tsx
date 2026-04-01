@@ -4,7 +4,7 @@ import {
   User as UserIcon, Eye, CheckCircle2, XCircle, Grid, List 
 } from 'lucide-react';
 import { useGlobalState } from '../context/GlobalState';
-import { User } from '../types';
+import type { User } from '../types';
 
 export default function Empleados() {
   const { db, updateUser, addUser } = useGlobalState();
