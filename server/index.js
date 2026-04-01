@@ -29,9 +29,11 @@ app.use('/api/appointments', appointmentsRouter);
 // Serve frontend in production
 const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath));
-app.get('*', (req, res) => {
+app.use((req, res, next) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(distPath, 'index.html'));
+  } else {
+    next();
   }
 });
 
