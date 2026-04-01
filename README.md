@@ -7,15 +7,22 @@ Construido con una arquitectura Full-Stack profesional preparada para despliegue
 
 ## 🚀 Características Principales
 
-### 1. Panel Administrativo (Privado)
-Protegido por contraseña global (`ADMIN_PASSWORD`), permite gestionar la operación total del despacho sin necesidad de expedientes de papel:
+### 1. Panel Administrativo y Roles (Privado)
+El sistema cuenta con un modelo de doble acceso para garantizar la privacidad y seguridad de la información:
+
+**🔐 Modos de Acceso:**
+- **Tab Administrador:** Ingreso mediante contraseña maestra (por defecto: `admin2087`). Tiene acceso total a clientes, finanzas, reportes, gestión de empleados y la agenda global.
+- **Tab Empleado (Contador):** Ingreso mediante correo electrónico y contraseña individual. Los contadores tienen una vista restringida: **solo** pueden acceder a "Mi Agenda" y ver únicamente las citas que les han sido asignadas.
+
+> **Nota para Empleados Seed:** Si se usan los datos de prueba autogenerados, los empleados por defecto tienen la contraseña `password123`.
+
+### 2. Características Principales del CRM
 - **Gestión de Clientes**: Expedientes centralizados con historial clínico/fiscal.
 - **Control de Visitas**: Registro de consultas detallado con servicios brindados.
 - **Finanzas y Pagos**: Seguimiento de abonos, saldos pendientes y generación de **Recibos PDF**.
-- **Agenda Inteligente**: Visualización del calendario por semana y días.
 - **Catálogo de Servicios**: Precios y descripciones actualizables.
 
-### 2. Portal de Clientes (Público)
+### 3. Portal de Clientes (Público)
 - **Ruta Autónoma**: `/agendar`
 - **Mobile-first**: Formulario de 3 pasos diseñado para facilidad de uso (edad 55-60+).
 - **Sincronización en Tiempo Real**: Evita dobles reservas leyendo desde PostgreSQL de forma instantánea.
