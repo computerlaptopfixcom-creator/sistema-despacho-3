@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  despacho3-app:
+    build: .
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://despacho:secretdbpass@despacho3-db:5432/despachodb
+      - ADMIN_PASSWORD=DespachoAdmin2087!
+    ports:
+      - "3001:3001"
+    depends_on:
+      despacho3-db:
+        condition: service_healthy
+    networks:
+      - despacho-net
+
+  despacho3-db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=despacho
+      - POSTGRES_PASSWORD=secretdbpass
+      - POSTGRES_DB=despachodb
+    volumes:
+      - despacho3-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U despacho"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - despacho-net
+
+volumes:
+  despacho3-data:
+
+networks:
+  despacho-net:

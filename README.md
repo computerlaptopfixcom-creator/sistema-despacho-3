@@ -47,25 +47,18 @@ El flujo de aplicación es:
 
 ---
 
-## 🌐 Configuración y Despliegue en EasyPanel
+## 🌐 Configuración y Despliegue en EasyPanel (Método Automático)
 
-El repositorio incluye un `Dockerfile` optimizado para **EasyPanel**. El despliegue toma menos de 2 minutos.
+El repositorio incluye un `docker-compose.yml` que automatiza por completo la creación de la base de datos, la vinculación y el despliegue del sistema sin que tengas que copiar y pegar variables manualmente.
 
 ### Pasos:
-1. Crea un servicio de base de datos **PostgreSQL** en EasyPanel.
-2. Crea un servicio tipo **App**.
-3. En la sección *Source*, selecciona la rama `main` de este repositorio en GitHub.
-4. En **Environment**, agrega las siguientes variables:
-
-```env
-# URL de conexión (obténla del servicio PostgreSQL de EasyPanel)
-DATABASE_URL=postgresql://user:password@host:5432/dbname
-
-# Contraseña para acceder al panel administrativo
-ADMIN_PASSWORD=TuContraseñaSecreta
-```
-
+1. En EasyPanel, crea un proyecto nuevo.
+2. Selecciona **"Templates"** o **"Services"** y elige crear un servicio usando **Github**.
+3. Selecciona tu repositorio `sistema-despacho-3` (rama `master`).
+4. **IMPORTANTE**: Asegúrate de marcar la opción que busca y usa tu archivo `docker-compose.yml`. (EasyPanel detectará ambos servicios: la app y la base de datos).
 5. Haz clic en **Deploy**. 
+
+> ¡Eso es todo! La base de datos y la aplicación web se enlazarán solas con una contraseña predefinida, y el sistema se inicializará por completo. La contraseña de administrador por defecto será: `DespachoAdmin2087!`. Puedes cambiarla después si quieres.
 
 > **Nota**: El sistema incluye "Autoseeding". La primera vez que arranque, la base de datos creará las tablas de *clients*, *visits*, *services*, *payments* y *appointments*, y precargará los servicios principales de diagnóstico de pensión.
 
