@@ -23,7 +23,7 @@ export async function initDB(retries = 5) {
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           nombre TEXT NOT NULL,
           email TEXT UNIQUE NOT NULL,
-          password TEXT NOT NULL DEFAULT 'password123',
+          password TEXT,
           telefono TEXT DEFAULT '',
           rol TEXT DEFAULT 'contador',
           activo BOOLEAN DEFAULT true,
@@ -94,6 +94,9 @@ export async function initDB(retries = 5) {
           upload_date TIMESTAMPTZ DEFAULT NOW(),
           uploaded_by TEXT DEFAULT 'Administrador'
         );
+
+        ALTER TABLE users ALTER COLUMN password DROP DEFAULT;
+        ALTER TABLE users ALTER COLUMN password DROP NOT NULL;
       `);
 
       // Seed default services if empty
