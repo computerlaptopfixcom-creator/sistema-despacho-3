@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useGlobalState } from './context/GlobalState';
 import Sidebar from './components/Sidebar';
 import Dashboard from './views/Dashboard';
@@ -15,7 +15,8 @@ import Login from './views/Login';
 import './App.css';
 
 function AdminLayout() {
-  const { loading } = useGlobalState();
+  const { loading, currentUser } = useGlobalState();
+  const isContador = currentUser?.rol === 'contador';
 
   if (loading) {
     return (
@@ -39,14 +40,25 @@ function AdminLayout() {
       <Sidebar />
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/clientes" element={<Clientes />} />
-          <Route path="/clientes/:id" element={<Expediente />} />
-          <Route path="/visita/:id" element={<Visita />} />
-          <Route path="/catalogo" element={<Catalogo />} />
-          <Route path="/reportes" element={<Reportes />} />
-          <Route path="/agenda" element={<Agenda />} />
-          <Route path="/empleados" element={<Empleados />} />
+          {/* Contador solo puede ver Agenda */}
+          {isContador ? (
+            <>
+              <Route path="/agenda" element={<Agenda />} />
+              {/* Redirigir cualquier otra ruta a /agenda */}
+              <Route path="*" element={<Navigate to="/agenda" replace />} />
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/clientes" element={<Clientes />} />
+              <Route path="/clientes/:id" element={<Expediente />} />
+              <Route path="/visita/:id" element={<Visita />} />
+              <Route path="/catalogo" element={<Catalogo />} />
+              <Route path="/reportes" element={<Reportes />} />
+              <Route path="/agenda" element={<Agenda />} />
+              <Route path="/empleados" element={<Empleados />} />
+            </>
+          )}
         </Routes>
       </main>
     </div>
@@ -61,7 +73,7 @@ export default function App() {
     localStorage.getItem('despacho3_token') === 'AUTH_GRANTED'
   );
 
-  // Verificación adicional de token contra el API (opcional)
+  // Verificación adicional de token contra el API
   useEffect(() => {
     if (isAuthenticated && !isPublic) {
       fetch('/api/auth/verify', {
@@ -70,6 +82,7 @@ export default function App() {
         .then(res => {
           if (!res.ok) {
             localStorage.removeItem('despacho3_token');
+            localStorage.removeItem('despacho3_user');
             setIsAuthenticated(false);
           }
         })
@@ -82,9 +95,19 @@ export default function App() {
   }
 
   if (!isAuthenticated) {
-    return <Login onLogin={(_user?: any) => setIsAuthenticated(true)} />;
+    return (
+      <Login
+        onLogin={(user?: any) => {
+          // If user object returned, save it and dispatch event for GlobalState
+          if (user) {
+            localStorage.setItem('despacho3_user', JSON.stringify(user));
+            window.dispatchEvent(new Event('despacho_login'));
+          }
+          setIsAuthenticated(true);
+        }}
+      />
+    );
   }
 
   return <AdminLayout />;
 }
-

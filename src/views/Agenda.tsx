@@ -5,8 +5,9 @@ import { useGlobalState } from '../context/GlobalState';
 import type { Appointment, AppointmentStatus } from '../types';
 
 export default function Agenda() {
-  const { db, addAppointment, updateAppointment, deleteAppointment } = useGlobalState();
+  const { db, addAppointment, updateAppointment, deleteAppointment, currentUser } = useGlobalState();
   const navigate = useNavigate();
+  const isContador = currentUser?.rol === 'contador';
 
   const [currentDate, setCurrentDate] = useState(() => {
     const d = new Date();
@@ -41,9 +42,16 @@ export default function Agenda() {
 
   const appointmentsThisWeek = useMemo(() => {
     return db.appointments
-      .filter(a => a.fecha >= weekStart && a.fecha <= weekEnd)
+      .filter(a => {
+        const inWeek = a.fecha >= weekStart && a.fecha <= weekEnd;
+        // Si es contador, solo ver las citas que le están asignadas
+        if (isContador && currentUser?.id) {
+          return inWeek && a.assigned_to === currentUser.id;
+        }
+        return inWeek;
+      })
       .sort((a, b) => a.fecha.localeCompare(b.fecha) || a.hora.localeCompare(b.hora));
-  }, [db.appointments, weekStart, weekEnd]);
+  }, [db.appointments, weekStart, weekEnd, isContador, currentUser]);
 
   const goToPrevWeek = () => {
     const d = new Date(currentDate + 'T12:00:00');

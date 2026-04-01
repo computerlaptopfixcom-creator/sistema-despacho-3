@@ -2,6 +2,24 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import type { Client, Visit, Service, Payment, Appointment, User } from '../types';
 
+// ── Current User (persisted in localStorage) ──────────────────────────
+type CurrentUser = {
+  id: string;
+  nombre: string;
+  email?: string;
+  rol: 'admin' | 'contador';
+};
+
+const loadCurrentUser = (): CurrentUser | null => {
+  try {
+    const raw = localStorage.getItem('despacho3_user');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+// ── Database Types ─────────────────────────────────────────────────────
 type Database = {
   clients: Client[];
   visits: Visit[];
@@ -23,6 +41,8 @@ const emptyDB: Database = {
 type GlobalStateContextType = {
   db: Database;
   loading: boolean;
+  currentUser: CurrentUser | null;
+  logout: () => void;
   addClient: (client: Client) => void;
   updateClient: (id: string, updates: Partial<Client>) => void;
   deleteClient: (id: string) => void;
@@ -54,6 +74,20 @@ const api = async (endpoint: string, options?: RequestInit) => {
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [db, setDb] = useState<Database>(emptyDB);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(loadCurrentUser);
+
+  // Listen for login events from outside the context
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setCurrentUser(loadCurrentUser());
+    };
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('despacho_login', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('despacho_login', handleStorageChange);
+    };
+  }, []);
 
   // Load all data from API on mount
   useEffect(() => {
@@ -72,6 +106,13 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         console.error('Failed to load data:', err);
       })
       .finally(() => setLoading(false));
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('despacho3_token');
+    localStorage.removeItem('despacho3_user');
+    setCurrentUser(null);
+    window.location.reload();
   }, []);
 
   // --- CLIENTS ---
@@ -202,7 +243,8 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   return (
     <GlobalStateContext.Provider
       value={{
-        db, loading, addClient, updateClient, deleteClient,
+        db, loading, currentUser, logout,
+        addClient, updateClient, deleteClient,
         addVisit, updateVisit,
         addService, updateService, deleteService,
         addPayment,
