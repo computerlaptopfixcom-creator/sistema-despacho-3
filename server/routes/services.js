@@ -9,6 +9,7 @@ const mapRow = (r) => ({
   categoria: r.categoria,
   descripcion: r.descripcion || '',
   precioBase: parseFloat(r.precio_base),
+  duracion: r.duracion || '60 min',
   atiende: r.atiende || '',
   activo: r.activo,
 });
@@ -26,11 +27,11 @@ router.get('/', async (req, res) => {
 // POST create
 router.post('/', async (req, res) => {
   try {
-    const { id, nombre, categoria, descripcion, precioBase, atiende, activo } = req.body;
+    const { id, nombre, categoria, descripcion, precioBase, duracion, atiende, activo } = req.body;
     const { rows } = await pool.query(
-      `INSERT INTO services (id, nombre, categoria, descripcion, precio_base, atiende, activo)
-       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [id, nombre, categoria || 'General', descripcion || '', precioBase || 0, atiende || '', activo !== false]
+      `INSERT INTO services (id, nombre, categoria, descripcion, precio_base, duracion, atiende, activo)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+      [id, nombre, categoria || 'General', descripcion || '', precioBase || 0, duracion || '60 min', atiende || '', activo !== false]
     );
     res.status(201).json(mapRow(rows[0]));
   } catch (err) {
@@ -41,12 +42,12 @@ router.post('/', async (req, res) => {
 // PUT update
 router.put('/:id', async (req, res) => {
   try {
-    const { nombre, categoria, descripcion, precioBase, atiende, activo } = req.body;
+    const { nombre, categoria, descripcion, precioBase, duracion, atiende, activo } = req.body;
     await pool.query(
       `UPDATE services SET nombre=COALESCE($1,nombre), categoria=COALESCE($2,categoria),
        descripcion=COALESCE($3,descripcion), precio_base=COALESCE($4,precio_base),
-       atiende=COALESCE($5,atiende), activo=COALESCE($6,activo) WHERE id=$7`,
-      [nombre, categoria, descripcion, precioBase, atiende, activo, req.params.id]
+       duracion=COALESCE($5,duracion), atiende=COALESCE($6,atiende), activo=COALESCE($7,activo) WHERE id=$8`,
+      [nombre, categoria, descripcion, precioBase, duracion, atiende, activo, req.params.id]
     );
     res.json({ ok: true });
   } catch (err) {

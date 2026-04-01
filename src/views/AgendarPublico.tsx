@@ -7,16 +7,6 @@ const OFFICE_HOURS = [
   '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
 ];
 
-const MOTIVOS = [
-  'Diagnóstico de Pensión',
-  'Trámite de Pensión IMSS',
-  'Corrección de Semanas Cotizadas',
-  'Declaración Anual',
-  'Constancia de Situación Fiscal',
-  'Alta en el SAT',
-  'Consultoría General',
-  'Otro',
-];
 
 type BookedSlot = { fecha: string; hora: string };
 
@@ -25,13 +15,23 @@ export default function AgendarPublico() {
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
-  const [motivo, setMotivo] = useState('');
+  const [services, setServices] = useState<any[]>([]);
+  const [selectedService, setSelectedService] = useState<any | null>(null);
+  const [atiendeSeleccionado, setAtiendeSeleccionado] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedHora, setSelectedHora] = useState('');
   const [booked, setBooked] = useState<BookedSlot[]>([]);
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
+
+  // Load services
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.json())
+      .then(data => setServices(data.filter((s: any) => s.activo)))
+      .catch(() => {});
+  }, []);
 
   // Get available dates (next 2 weeks, Mon-Fri)
   const getWeekDates = () => {
@@ -105,9 +105,10 @@ export default function AgendarPublico() {
           clienteNombre: nombre.trim(),
           clienteTelefono: telefono.trim(),
           clienteEmail: email.trim(),
+          atiendeSeleccionado: atiendeSeleccionado || '',
           fecha: selectedDate,
           hora: selectedHora,
-          motivo: motivo || 'Consulta general',
+          motivo: selectedService?.nombre || 'Consulta general',
           estado: 'Programada',
         }),
       });
@@ -135,10 +136,11 @@ export default function AgendarPublico() {
             <div><strong>Correo:</strong> {email || 'No proporcionado'}</div>
             <div><strong>Fecha:</strong> {new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</div>
             <div><strong>Hora:</strong> {selectedHora}</div>
-            <div><strong>Motivo:</strong> {motivo || 'Consulta general'}</div>
+            <div><strong>Motivo:</strong> {selectedService?.nombre || 'Consulta general'}</div>
+            {atiendeSeleccionado && <div><strong>Asesor:</strong> {atiendeSeleccionado}</div>}
           </div>
           <p className="pub-muted">Le contactaremos por teléfono para confirmar su cita.</p>
-          <button className="pub-btn pub-btn-primary" onClick={() => { setDone(false); setStep(1); setNombre(''); setTelefono(''); setEmail(''); setMotivo(''); setSelectedDate(''); setSelectedHora(''); }}>
+          <button className="pub-btn pub-btn-primary" onClick={() => { setDone(false); setStep(1); setNombre(''); setTelefono(''); setEmail(''); setSelectedService(null); setAtiendeSeleccionado(''); setSelectedDate(''); setSelectedHora(''); }}>
             Agendar otra cita
           </button>
         </div>
@@ -198,16 +200,39 @@ export default function AgendarPublico() {
             </div>
             <div className="pub-form-group">
               <label>¿Qué servicio necesita?</label>
-              <select value={motivo} onChange={e => setMotivo(e.target.value)}>
-                <option value="">Seleccione un motivo...</option>
-                {MOTIVOS.map(m => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
+              <div style={{ display: 'grid', gap: '10px', marginTop: '10px' }}>
+                 {services.map(s => (
+                    <div 
+                      key={s.id} 
+                      onClick={() => { setSelectedService(s); setAtiendeSeleccionado(''); }}
+                      style={{ border: '2px solid', borderRadius: '8px', padding: '12px', cursor: 'pointer', background: selectedService?.id === s.id ? 'var(--accent-blue-light)' : 'var(--bg-card)', borderColor: selectedService?.id === s.id ? 'var(--accent-blue)' : 'var(--border-color)', transition: 'all 0.2s' }}
+                    >
+                       <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>{s.nombre}</div>
+                       <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                         <span style={{ display: 'inline-block', minWidth: 90 }}>⏱ {s.duracion || '60 min'}</span>
+                         <span>💰 {Number(s.precioBase).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</span>
+                       </div>
+                    </div>
+                 ))}
+              </div>
             </div>
+
+            {selectedService?.atiende && selectedService.atiende.split(/[\/,]/).length > 1 && (
+               <div className="pub-form-group" style={{ marginTop: '20px' }}>
+                  <label>¿Quién desea que le atienda? *</label>
+                  <select value={atiendeSeleccionado} onChange={e => setAtiendeSeleccionado(e.target.value)}>
+                    <option value="">Seleccione a su asesor...</option>
+                    {selectedService.atiende.split(/[\/,]/).map((a: string) => a.trim()).filter(Boolean).map((a: string) => (
+                      <option key={a} value={a}>{a}</option>
+                    ))}
+                  </select>
+               </div>
+            )}
+
             <button
               className="pub-btn pub-btn-primary pub-btn-full"
-              disabled={!nombre.trim() || !telefono.trim() || !email.trim()}
+              style={{ marginTop: 24 }}
+              disabled={!nombre.trim() || !telefono.trim() || !email.trim() || !selectedService || (selectedService?.atiende?.split(/[\/,]/).length > 1 && !atiendeSeleccionado)}
               onClick={() => setStep(2)}
             >
               Siguiente →
@@ -316,7 +341,7 @@ export default function AgendarPublico() {
                 <Phone size={16} />
                 <div>
                   <strong>Motivo</strong>
-                  <span>{motivo || 'Consulta general'}</span>
+                  <span>{selectedService?.nombre || 'Consulta general'}</span>
                 </div>
               </div>
             </div>

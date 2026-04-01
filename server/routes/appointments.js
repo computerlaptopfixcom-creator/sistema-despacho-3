@@ -30,11 +30,14 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { id, fecha, hora, motivo, estado, notas } = req.body;
-    let { clienteId, clienteNombre, clienteTelefono, clienteEmail } = req.body;
+    let { clienteId, clienteNombre, clienteTelefono, clienteEmail, atiendeSeleccionado } = req.body;
 
-    // Asignación de atiendeId basado en el servicio (motivo)
+    // Asignación de atiendeId basado en el servicio (motivo) o selección del usuario
     let atiendeId = null;
-    if (motivo) {
+    if (atiendeSeleccionado) {
+        const { rows: userRows } = await pool.query('SELECT id FROM users WHERE nombre ILIKE $1', [`%${atiendeSeleccionado.trim()}%`]);
+        if (userRows.length > 0) atiendeId = userRows[0].id;
+    } else if (motivo) {
         const { rows: srvRows } = await pool.query('SELECT atiende FROM services WHERE nombre = $1', [motivo]);
         if (srvRows.length > 0 && srvRows[0].atiende) {
             const atiendeName = srvRows[0].atiende.split(' / ')[0].trim();

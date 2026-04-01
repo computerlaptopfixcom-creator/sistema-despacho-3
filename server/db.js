@@ -28,11 +28,6 @@ export async function initDB(retries = 5) {
           atiende TEXT DEFAULT '',
           activo BOOLEAN DEFAULT true
         );
-        
-        -- Ejecución manual de alter table por seguridad para DB en producción
-        ALTER TABLE services ADD COLUMN IF NOT EXISTS atiende TEXT DEFAULT '';
-        ALTER TABLE clients ADD COLUMN IF NOT EXISTS email TEXT DEFAULT '';
-
         CREATE TABLE IF NOT EXISTS visits (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           cliente_id UUID REFERENCES clients(id) ON DELETE CASCADE,
@@ -70,7 +65,10 @@ export async function initDB(retries = 5) {
           notas TEXT DEFAULT ''
         );
 
+        ALTER TABLE clients ADD COLUMN IF NOT EXISTS email VARCHAR(255);
         ALTER TABLE appointments ADD COLUMN IF NOT EXISTS cliente_email TEXT DEFAULT '';
+        ALTER TABLE appointments ADD COLUMN IF NOT EXISTS assigned_to UUID;
+        ALTER TABLE services ADD COLUMN IF NOT EXISTS duracion TEXT DEFAULT '60 min';
 
         CREATE TABLE IF NOT EXISTS client_documents (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

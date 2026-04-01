@@ -16,6 +16,7 @@ export default function Catalogo() {
     categoria: 'General' as Service['categoria'],
     descripcion: '',
     precioBase: '',
+    duracion: '60 min',
     atiende: '',
   });
 
@@ -24,7 +25,7 @@ export default function Catalogo() {
     : db.services.filter(s => s.categoria === filterCat);
 
   const resetForm = () => {
-    setForm({ nombre: '', categoria: 'General', descripcion: '', precioBase: '', atiende: '' });
+    setForm({ nombre: '', categoria: 'General', descripcion: '', precioBase: '', duracion: '60 min', atiende: '' });
     setShowForm(false);
     setEditingId(null);
   };
@@ -40,6 +41,7 @@ export default function Catalogo() {
         categoria: form.categoria,
         descripcion: form.descripcion.trim(),
         precioBase: precio,
+        duracion: form.duracion.trim(),
         atiende: form.atiende.trim(),
       });
     } else {
@@ -49,6 +51,7 @@ export default function Catalogo() {
         categoria: form.categoria,
         descripcion: form.descripcion.trim(),
         precioBase: precio,
+        duracion: form.duracion.trim(),
         atiende: form.atiende.trim(),
         activo: true,
       };
@@ -63,6 +66,7 @@ export default function Catalogo() {
       categoria: s.categoria,
       descripcion: s.descripcion,
       precioBase: s.precioBase.toString(),
+      duracion: s.duracion || '60 min',
       atiende: s.atiende || '',
     });
     setEditingId(s.id);
@@ -128,6 +132,7 @@ export default function Catalogo() {
                   <th>Atiende</th>
                   <th>Descripción</th>
                   <th>Precio Base</th>
+                  <th>Duración</th>
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
@@ -145,6 +150,7 @@ export default function Catalogo() {
                     <td className="text-secondary">{s.atiende || '—'}</td>
                     <td className="text-secondary text-sm" style={{ maxWidth: 250 }}>{s.descripcion || '—'}</td>
                     <td style={{ fontWeight: 700, fontSize: '1rem' }}>{formatMoney(s.precioBase)}</td>
+                    <td className="text-secondary">{s.duracion || '60 min'}</td>
                     <td>
                       <button
                          onClick={() => toggleActive(s)}
@@ -219,6 +225,14 @@ export default function Catalogo() {
                   value={form.precioBase}
                   onChange={e => setForm(p => ({ ...p, precioBase: e.target.value }))}
                   placeholder="Ej: 1500"
+                />
+              </div>
+              <div className="form-group">
+                <label>Duración</label>
+                <input
+                  value={form.duracion}
+                  onChange={e => setForm(p => ({ ...p, duracion: e.target.value }))}
+                  placeholder="Ej: 60 min, 2 hrs..."
                 />
               </div>
             </div>

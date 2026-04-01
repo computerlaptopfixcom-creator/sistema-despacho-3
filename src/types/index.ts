@@ -21,6 +21,7 @@ export type Service = {
   categoria: 'Pensiones' | 'Fiscal' | 'General';
   descripcion: string;
   precioBase: number;
+  duracion: string;
   atiende?: string;
   activo: boolean;
 };
