@@ -34,17 +34,27 @@ export default function AgendarPublico() {
   // State
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+  const [employees, setEmployees] = useState<{id:string; nombre:string; rol:string}[]>([]);
 
   const selectedService = services.find(s => s.id === selectedServiceId) || null;
+  const getEmployeeName = (id: string) => {
+    if (!id || id === 'Por asignar') return 'Por asignar';
+    return employees.find(e => e.id === id)?.nombre || "Asesor Asignado";
+  };
   const atiendeOptions = selectedService?.atiende
     ? selectedService.atiende.split(/[\/,]/).map(a => a.trim()).filter(Boolean)
     : [];
 
-  // Load services
+  // Load services and employees
   useEffect(() => {
     fetch('/api/services')
       .then(r => r.json())
       .then((data: ServiceData[]) => setServices(data.filter(s => s.activo)))
+      .catch(() => {});
+      
+    fetch('/api/users')
+      .then(r => r.json())
+      .then(data => setEmployees(data.filter((u:any) => u.rol !== 'cliente')))
       .catch(() => {});
   }, []);
 
@@ -191,7 +201,7 @@ export default function AgendarPublico() {
                 <div className="bk-ticket-row"><span>Fecha:</span><strong>{new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })}</strong></div>
                 <div className="bk-ticket-row"><span>Hora:</span><strong>{formatHourRange(selectedHora)}</strong></div>
                 <div className="bk-ticket-row"><span>Servicio:</span><strong>{selectedService?.nombre}</strong></div>
-                <div className="bk-ticket-row"><span>Empleado:</span><strong>{atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : 'Por asignar')}</strong></div>
+                  <div className="bk-ticket-row"><span>Asesor:</span><strong>{getEmployeeName(atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : 'Por asignar'))}</strong></div>
                 <div className="bk-ticket-row"><span>Precio:</span><strong>{Number(selectedService?.precioBase || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</strong></div>
                 <hr />
                 <div className="bk-ticket-row"><span>Tu nombre:</span><strong>{nombre}</strong></div>
@@ -286,11 +296,11 @@ export default function AgendarPublico() {
 
               {atiendeOptions.length > 1 && (
                 <div className="bk-field" style={{ marginTop: 24 }}>
-                  <label>Empleado:</label>
+                  <label>Asesor:</label>
                   <select value={atiendeSeleccionado} onChange={e => setAtiendeSeleccionado(e.target.value)}>
-                    <option value="">Selecciona el empleado</option>
+                    <option value="">Cualquier asesor disponible</option>
                     {atiendeOptions.map(a => (
-                      <option key={a} value={a}>{a}</option>
+                      <option key={a} value={a}>{getEmployeeName(a)}</option>
                     ))}
                   </select>
                 </div>
@@ -398,7 +408,7 @@ export default function AgendarPublico() {
                 <div className="bk-ticket">
                   <div className="bk-ticket-row"><span>Servicio:</span><strong>{selectedService?.nombre}</strong></div>
                   <div className="bk-ticket-row"><span>Precio:</span><strong className="bk-price">{Number(selectedService?.precioBase || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</strong></div>
-                  <div className="bk-ticket-row"><span>Empleado:</span><strong>{atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : 'Por asignar')}</strong></div>
+                    <div className="bk-ticket-row"><span>Asesor:</span><strong>{getEmployeeName(atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : 'Por asignar'))}</strong></div>
                   <hr />
                   <div className="bk-ticket-row"><span>Fecha:</span><strong>{new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</strong></div>
                   <div className="bk-ticket-row"><span>Hora:</span><strong>{formatHourRange(selectedHora)}</strong></div>
