@@ -36,14 +36,29 @@ router.post('/', async (req, res) => {
     // Asignación de atiendeId basado en el servicio (motivo) o selección del usuario
     let atiendeId = null;
     if (atiendeSeleccionado) {
-        const { rows: userRows } = await pool.query('SELECT id FROM users WHERE nombre ILIKE $1', [`%${atiendeSeleccionado.trim()}%`]);
-        if (userRows.length > 0) atiendeId = userRows[0].id;
+        const trimmed = atiendeSeleccionado.trim();
+        // First try: direct UUID match (Catálogo stores user IDs)
+        const { rows: idRows } = await pool.query('SELECT id FROM users WHERE id::text = $1', [trimmed]);
+        if (idRows.length > 0) {
+            atiendeId = idRows[0].id;
+        } else {
+            // Fallback: name-based match
+            const { rows: nameRows } = await pool.query('SELECT id FROM users WHERE nombre ILIKE $1', [`%${trimmed}%`]);
+            if (nameRows.length > 0) atiendeId = nameRows[0].id;
+        }
     } else if (motivo) {
         const { rows: srvRows } = await pool.query('SELECT atiende FROM services WHERE nombre = $1', [motivo]);
         if (srvRows.length > 0 && srvRows[0].atiende) {
-            const atiendeName = srvRows[0].atiende.split(' / ')[0].trim();
-            const { rows: userRows } = await pool.query('SELECT id FROM users WHERE nombre ILIKE $1', [`%${atiendeName}%`]);
-            if (userRows.length > 0) atiendeId = userRows[0].id;
+            // atiende can be comma-separated UUIDs or names
+            const firstAtiende = srvRows[0].atiende.split(/[,/]/)[0].trim();
+            // Try UUID first
+            const { rows: idRows } = await pool.query('SELECT id FROM users WHERE id::text = $1', [firstAtiende]);
+            if (idRows.length > 0) {
+                atiendeId = idRows[0].id;
+            } else {
+                const { rows: nameRows } = await pool.query('SELECT id FROM users WHERE nombre ILIKE $1', [`%${firstAtiende}%`]);
+                if (nameRows.length > 0) atiendeId = nameRows[0].id;
+            }
         }
     }
 
