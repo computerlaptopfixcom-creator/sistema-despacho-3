@@ -185,31 +185,6 @@ export default function AgendarPublico() {
     return items;
   };
 
-  /* ─── Google Calendar Link ─── */
-  const openGoogleCalendar = () => {
-    const [h] = selectedHora.split(':').map(Number);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const [y, m, d] = selectedDate.split('-');
-    const dtStart = `${y}${m}${d}T${pad(h)}0000`;
-    const dtEnd = `${y}${m}${d}T${pad(h + 1)}0000`;
-    
-    const title = `Cita - ${selectedService?.nombre || 'Consulta'} | Despacho Fiscal 2087`;
-    const asesor = getEmployeeName(atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : ''));
-    const details = `Asesor: ${asesor}\nPago: ${metodoPago}\nTeléfono: +52 656 533 4271`;
-    const location = `C. Toronja Roja 6275, Ampliación Aeropuerto, 32698 Juárez, Chih.`;
-    
-    const params = new URLSearchParams({
-      action: 'TEMPLATE',
-      text: title,
-      dates: `${dtStart}/${dtEnd}`,
-      ctz: 'America/Ciudad_Juarez',
-      details: details,
-      location: location,
-    });
-    
-    window.open(`https://calendar.google.com/calendar/render?${params.toString()}`, '_blank');
-  };
-
   /* ─── RENDER ─── */
 
   if (done) {
@@ -264,10 +239,7 @@ export default function AgendarPublico() {
               </div>
 
               <p className="bk-success-msg">Le contactaremos para confirmar su cita.</p>
-              <div className="bk-success-actions">
-                <button className="bk-btn bk-btn-secondary" onClick={openGoogleCalendar}>📆 Agregar a Google Calendar</button>
-                <button className="bk-btn bk-btn-primary" onClick={reset}>Terminar</button>
-              </div>
+              <button className="bk-btn bk-btn-primary" onClick={reset}>Terminar</button>
             </div>
           </main>
         </div>
