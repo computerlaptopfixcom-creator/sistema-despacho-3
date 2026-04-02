@@ -176,7 +176,7 @@ export default function AgendarPublico() {
   const sidebarSummary = () => {
     const items: { label: string; sub?: string }[] = [];
     if (step > 0 && selectedService) {
-      items.push({ label: selectedService.nombre, sub: atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : undefined) });
+      items.push({ label: selectedService.nombre, sub: getEmployeeName(atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : '')) });
     }
     if (step > 1 && selectedDate) {
       const d = new Date(selectedDate + 'T12:00:00');

@@ -941,12 +941,13 @@ tbody tr.clickable {
   }
 
   /* ── Rest of mobile overrides ── */
-  .bk-cal-cell { padding: 10px 4px !important; font-size: 0.85rem !important; }
+  .bk-cal-cell { padding: 6px 2px !important; font-size: 0.85rem !important; }
   .bk-content { padding: 20px 16px; }
-  .bk-main-header { padding: 20px 16px 0; }
+  .bk-main-header { padding: 16px 16px 0; }
   .bk-main-footer { padding: 16px; }
   .bk-field-row { grid-template-columns: 1fr; }
   .bk-timeslot-grid { grid-template-columns: 1fr; }
+  .bk-payment-methods { flex-direction: column; }
 
   /* Admin Dashboard Mobile Overrides */
   .form-row { grid-template-columns: 1fr; gap: 12px; }
