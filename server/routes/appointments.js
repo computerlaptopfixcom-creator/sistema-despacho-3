@@ -14,6 +14,7 @@ const mapRow = (r) => ({
   motivo: r.motivo || 'Consulta general',
   estado: r.estado,
   notas: r.notas || '',
+  assigned_to: r.assigned_to,
 });
 
 // GET all
