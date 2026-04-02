@@ -228,7 +228,7 @@ export default function AgendarPublico() {
               <div className="bk-location-box">
                 <div className="bk-location-title">📍 Dirección de la cita</div>
                 <a
-                  href="https://www.google.com/maps/place/?q=place_id:ChIJX5YxYz9e54YRqYw3rIR4omo"
+                  href="https://maps.app.goo.gl/FPoV7PznL3yDsEyS9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bk-location-link"
