@@ -9,10 +9,10 @@ const OFFICE_HOURS = [
 ];
 
 const STEPS = [
-  { key: 'servicio', label: 'Selección del servicio', icon: ClipboardCheck },
-  { key: 'fecha', label: 'Fecha y Hora', icon: CalendarDays },
-  { key: 'datos', label: 'Tu Información', icon: UserCircle },
-  { key: 'confirmar', label: 'Confirmar', icon: Check },
+  { key: 'servicio', label: 'Selección del servicio', shortLabel: 'Servicio', icon: ClipboardCheck },
+  { key: 'fecha', label: 'Fecha y Hora', shortLabel: 'Fecha', icon: CalendarDays },
+  { key: 'datos', label: 'Tu Información', shortLabel: 'Info', icon: UserCircle },
+  { key: 'confirmar', label: 'Confirmar', shortLabel: 'Confirmar', icon: Check },
 ];
 
 export default function AgendarPublico() {
@@ -262,7 +262,7 @@ export default function AgendarPublico() {
                     <div className="bk-mobile-dot">
                       {completed ? <Check size={14} /> : i + 1}
                     </div>
-                    <span className="bk-mobile-step-label">{s.label}</span>
+                    <span className="bk-mobile-step-label">{s.shortLabel}</span>
                   </div>
                   {i < STEPS.length - 1 && (
                     <div className={`bk-mobile-line ${i < step ? 'done' : ''}`} />
