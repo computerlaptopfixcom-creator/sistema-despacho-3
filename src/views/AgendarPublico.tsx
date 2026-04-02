@@ -5,7 +5,7 @@ type BookedSlot = { fecha: string; hora: string };
 type ServiceData = { id: string; nombre: string; precioBase: number; duracion: string; atiende: string; activo: boolean };
 
 const OFFICE_HOURS = [
-  '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+  '11:00', '12:00', '13:00', '14:00', '15:00', '16:00',
 ];
 
 const STEPS = [
@@ -108,10 +108,12 @@ export default function AgendarPublico() {
 
   const formatHourRange = (hora: string) => {
     const [h] = hora.split(':').map(Number);
-    const start = h <= 12 ? `${h}:00 a. m.` : `${h - 12}:00 p. m.`;
-    const endH = h + 1;
-    const end = endH <= 12 ? `${endH}:00 a. m.` : `${endH - 12}:00 p. m.`;
-    return `${start} - ${end}`;
+    const fmtH = (n: number) => {
+      if (n === 0 || n === 24) return '12:00 a. m.';
+      if (n === 12) return '12:00 p. m.';
+      return n < 12 ? `${n}:00 a. m.` : `${n - 12}:00 p. m.`;
+    };
+    return `${fmtH(h)} - ${fmtH(h + 1)}`;
   };
 
   const prevMonth = () => {
