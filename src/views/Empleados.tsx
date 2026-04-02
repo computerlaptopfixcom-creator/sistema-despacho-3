@@ -61,6 +61,7 @@ export default function Empleados() {
         email: form.email,
         telefono: form.telefono,
         disponibilidad: form.disponibilidad,
+        rol: form.rol,
       };
       // Solo actualizar password si se escribió algo
       if (form.password.trim()) {
