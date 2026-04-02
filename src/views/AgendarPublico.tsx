@@ -250,6 +250,28 @@ export default function AgendarPublico() {
               </div>
             );
           })}
+
+          {/* ── Mobile Progress Bar ── */}
+          <div className="bk-mobile-progress">
+            {STEPS.map((s, i) => {
+              const completed = i < step;
+              const active = i === step;
+              return (
+                <div key={`m-${s.key}`} style={{ display: 'contents' }}>
+                  <div className={`bk-mobile-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}`}>
+                    <div className="bk-mobile-dot">
+                      {completed ? <Check size={14} /> : i + 1}
+                    </div>
+                    <span className="bk-mobile-step-label">{s.label}</span>
+                  </div>
+                  {i < STEPS.length - 1 && (
+                    <div className={`bk-mobile-line ${i < step ? 'done' : ''}`} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
           <div className="bk-sidebar-footer">
             <div className="bk-sidebar-contact">Contacto</div>
             <div>+52 656 533 4271</div>

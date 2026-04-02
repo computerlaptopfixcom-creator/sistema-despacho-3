@@ -459,6 +459,8 @@ tbody tr.clickable {
   flex-direction: column;
   gap: 8px;
 }
+/* Hide mobile progress bar on desktop */
+.bk-mobile-progress { display: none; }
 .bk-sidebar-brand {
   font-size: 1.1rem;
   font-weight: 800;
@@ -817,30 +819,104 @@ tbody tr.clickable {
     border-radius: 0;
     min-height: 100vh;
   }
+
+  /* ── Mobile Sidebar → Compact Header + Progress Bar ── */
   .bk-sidebar {
     width: 100%;
     min-width: 100%;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 16px 20px;
-    gap: 8px;
-    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
+    padding: 20px 20px 16px;
+    gap: 0;
+    overflow: hidden;
   }
   .bk-sidebar-brand {
     width: 100%;
-    margin-bottom: 10px;
-    font-size: 1rem;
+    margin-bottom: 16px;
+    font-size: 1.05rem;
+    text-align: center;
+    letter-spacing: 0.02em;
   }
+
+  /* Hide the default step layout, show a custom progress row */
   .bk-step {
-    padding: 8px 10px;
-    flex: 1;
-    min-width: 0;
+    display: none;
   }
   .bk-step-summary { display: none; }
-  .bk-step-label { font-size: 0.7rem; }
-  .bk-step-dot { width: 26px; height: 26px; flex-shrink: 0; }
   .bk-sidebar-footer { display: none; }
+
+  /* ── Mobile Progress Bar (injected via new JSX) ── */
+  .bk-mobile-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    width: 100%;
+    padding: 0 8px;
+  }
+  .bk-mobile-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .bk-mobile-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 2px solid #475569;
+    background: #334155;
+    color: #64748b;
+    transition: all 250ms ease;
+  }
+  .bk-mobile-step.active .bk-mobile-dot {
+    background: #3b82f6;
+    border-color: #60a5fa;
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  }
+  .bk-mobile-step.completed .bk-mobile-dot {
+    background: #16a34a;
+    border-color: #22c55e;
+    color: #fff;
+  }
+  .bk-mobile-step-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #64748b;
+    max-width: 64px;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bk-mobile-step.active .bk-mobile-step-label {
+    color: #e2e8f0;
+  }
+  .bk-mobile-step.completed .bk-mobile-step-label {
+    color: #94a3b8;
+  }
+  .bk-mobile-line {
+    flex: 1;
+    height: 2px;
+    background: #334155;
+    min-width: 20px;
+    margin: 0 -2px;
+    margin-bottom: 18px;
+    transition: background 250ms ease;
+  }
+  .bk-mobile-line.done {
+    background: #22c55e;
+  }
+
+  /* ── Rest of mobile overrides ── */
   .bk-cal-cell { padding: 10px 4px !important; font-size: 0.85rem !important; }
   .bk-content { padding: 20px 16px; }
   .bk-main-header { padding: 20px 16px 0; }
