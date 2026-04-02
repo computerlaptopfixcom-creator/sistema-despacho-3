@@ -12,6 +12,8 @@ export default function Clientes() {
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [newCurp, setNewCurp] = useState('');
+  const [newNss, setNewNss] = useState('');
 
   const filteredClients = useMemo(() => {
     if (!searchQuery.trim()) return db.clients;
@@ -43,12 +45,16 @@ export default function Clientes() {
       nombre: newName.trim(),
       telefono: newPhone.trim(),
       email: newEmail.trim(),
+      curp: newCurp.trim(),
+      nss: newNss.trim(),
       fechaAlta: new Date().toISOString(),
     };
     addClient(client);
     setNewName('');
     setNewPhone('');
     setNewEmail('');
+    setNewCurp('');
+    setNewNss('');
     setShowNewClient(false);
     navigate(`/clientes/${client.id}`);
   };
@@ -150,6 +156,24 @@ export default function Clientes() {
                 placeholder="Ej: maria.lopez@email.com"
                 value={newEmail}
                 onChange={e => setNewEmail(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>CURP</label>
+              <input
+                type="text"
+                placeholder="Ej: LOPM900101MDFR..."
+                value={newCurp}
+                onChange={e => setNewCurp(e.target.value.toUpperCase())}
+              />
+            </div>
+            <div className="form-group">
+              <label>Número de IMSS (NSS)</label>
+              <input
+                type="text"
+                placeholder="Ej: 12345678901"
+                value={newNss}
+                onChange={e => setNewNss(e.target.value)}
               />
             </div>
             <div className="form-group">

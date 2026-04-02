@@ -12,6 +12,9 @@ export default function Dashboard() {
   const [showNewClient, setShowNewClient] = useState(false);
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newCurp, setNewCurp] = useState('');
+  const [newNss, setNewNss] = useState('');
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -98,11 +101,17 @@ export default function Dashboard() {
       id: crypto.randomUUID(),
       nombre: newName.trim(),
       telefono: newPhone.trim(),
+      email: newEmail.trim(),
+      curp: newCurp.trim(),
+      nss: newNss.trim(),
       fechaAlta: new Date().toISOString(),
     };
     addClient(client);
     setNewName('');
     setNewPhone('');
+    setNewEmail('');
+    setNewCurp('');
+    setNewNss('');
     setShowNewClient(false);
     navigate(`/clientes/${client.id}`);
   };
@@ -346,6 +355,33 @@ export default function Dashboard() {
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
                 autoFocus
+              />
+            </div>
+            <div className="form-group">
+              <label>Correo Electrónico</label>
+              <input
+                type="email"
+                placeholder="Ej: juan.perez@email.com"
+                value={newEmail}
+                onChange={e => setNewEmail(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>CURP</label>
+              <input
+                type="text"
+                placeholder="Ej: PERE123456HDRX..."
+                value={newCurp}
+                onChange={e => setNewCurp(e.target.value.toUpperCase())}
+              />
+            </div>
+            <div className="form-group">
+              <label>Número de IMSS (NSS)</label>
+              <input
+                type="text"
+                placeholder="Ej: 12345678901"
+                value={newNss}
+                onChange={e => setNewNss(e.target.value)}
               />
             </div>
             <div className="form-group">

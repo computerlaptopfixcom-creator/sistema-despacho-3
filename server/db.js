@@ -14,10 +14,15 @@ export async function initDB(retries = 5) {
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           nombre TEXT NOT NULL,
           telefono TEXT NOT NULL,
+          email TEXT,
           curp TEXT DEFAULT '',
+          nss TEXT DEFAULT '',
           notas_generales TEXT DEFAULT '',
           fecha_alta TIMESTAMPTZ DEFAULT NOW()
         );
+        
+        ALTER TABLE clients ADD COLUMN IF NOT EXISTS email TEXT;
+        ALTER TABLE clients ADD COLUMN IF NOT EXISTS nss TEXT DEFAULT '';
 
         CREATE TABLE IF NOT EXISTS users (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

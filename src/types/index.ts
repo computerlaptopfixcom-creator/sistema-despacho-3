@@ -4,6 +4,7 @@ export type Client = {
   telefono: string;
   email?: string;
   curp?: string;
+  nss?: string;
   notasGenerales?: string;
   fechaAlta: string;
 };
