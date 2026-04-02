@@ -360,7 +360,7 @@ export default function AgendarPublico() {
               {/* Month nav */}
               <div className="bk-cal-nav">
                 <select value={calMonth} onChange={e => setCalMonth(Number(e.target.value))}>
-                  {monthNames.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                  {monthNames.map((m, i) => <option key={i} value={i}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>)}
                 </select>
                 <select value={calYear} onChange={e => setCalYear(Number(e.target.value))}>
                   {[2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
@@ -400,7 +400,7 @@ export default function AgendarPublico() {
               {/* Time slots */}
               {selectedDate && (
                 <div className="bk-timeslots">
-                  <h4>{new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })}</h4>
+                  <h4>🕐 Horarios disponibles — {new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })}</h4>
                   <div className="bk-timeslot-grid">
                     {OFFICE_HOURS.map(hora => {
                       const taken = isSlotTaken(selectedDate, hora);
