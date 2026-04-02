@@ -76,7 +76,7 @@ router.post('/', async (req, res) => {
 // PUT update
 router.put('/:id', async (req, res) => {
   try {
-    const { estado, notas, clienteNombre, clienteTelefono, clienteEmail, motivo } = req.body;
+    const { estado, notas, clienteNombre, clienteTelefono, clienteEmail, motivo, fecha, hora } = req.body;
     const sets = [];
     const vals = [];
     let i = 1;
@@ -87,6 +87,8 @@ router.put('/:id', async (req, res) => {
     if (clienteTelefono !== undefined) { sets.push(`cliente_telefono=$${i++}`); vals.push(clienteTelefono); }
     if (clienteEmail !== undefined) { sets.push(`cliente_email=$${i++}`); vals.push(clienteEmail); }
     if (motivo !== undefined) { sets.push(`motivo=$${i++}`); vals.push(motivo); }
+    if (fecha !== undefined) { sets.push(`fecha=$${i++}`); vals.push(fecha); }
+    if (hora !== undefined) { sets.push(`hora=$${i++}`); vals.push(hora); }
 
     if (sets.length > 0) {
       vals.push(req.params.id);

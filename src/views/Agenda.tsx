@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CalendarPlus, Calendar, List, ChevronLeft, ChevronRight, Search, Plus, Filter, Download, User } from 'lucide-react';
+import { CalendarPlus, Calendar, List, ChevronLeft, ChevronRight, Search, Plus, Filter, Download, User, RefreshCw, XCircle, X } from 'lucide-react';
 import { useGlobalState } from '../context/GlobalState';
 import type { Appointment, AppointmentStatus } from '../types';
 
@@ -28,6 +28,31 @@ export default function Agenda() {
   const [apptFecha, setApptFecha] = useState(currentDate);
   const [apptHora, setApptHora] = useState('10:00');
   const [apptMotivo, setApptMotivo] = useState('');
+
+  // --- RESCHEDULE MODAL ---
+  const [rescheduleAppt, setRescheduleAppt] = useState<Appointment | null>(null);
+  const [reschedFecha, setReschedFecha] = useState('');
+  const [reschedHora, setReschedHora] = useState('');
+
+  const OFFICE_HOURS = ['11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
+
+  const openReschedule = (appt: Appointment) => {
+    setRescheduleAppt(appt);
+    setReschedFecha(appt.fecha);
+    setReschedHora(appt.hora);
+  };
+
+  const handleReschedule = () => {
+    if (!rescheduleAppt || !reschedFecha || !reschedHora) return;
+    updateAppointment(rescheduleAppt.id, { fecha: reschedFecha, hora: reschedHora } as any);
+    setRescheduleAppt(null);
+  };
+
+  const handleCancel = (appt: Appointment) => {
+    if (confirm(`¿Cancelar la cita de ${appt.clienteNombre}?`)) {
+      updateAppointment(appt.id, { estado: 'Cancelada' as AppointmentStatus });
+    }
+  };
 
   // Get appointments filtered by Role
   const authorizedAppointments = useMemo(() => {
@@ -250,10 +275,9 @@ export default function Agenda() {
                   <th style={{ padding: '16px 12px', textAlign: 'left', fontWeight: 600 }}>Hora</th>
                   <th style={{ padding: '16px 12px', textAlign: 'left', fontWeight: 600 }}>Cliente</th>
                   <th style={{ padding: '16px 12px', textAlign: 'left', fontWeight: 600 }}>Servicio</th>
-                  <th style={{ padding: '16px 12px', textAlign: 'left', fontWeight: 600 }}>Tipo</th>
                   <th style={{ padding: '16px 12px', textAlign: 'left', fontWeight: 600 }}>Estado</th>
                   <th style={{ padding: '16px 12px', textAlign: 'left', fontWeight: 600 }}>Empleado</th>
-                  <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: 600 }}>Ubicación</th>
+                  <th style={{ padding: '16px 24px', textAlign: 'left', fontWeight: 600 }}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -263,16 +287,13 @@ export default function Agenda() {
                     : (a.motivo.toLowerCase().includes('contable') ? 'Christian Huerta' : 'Gerardo Huerta');
                     
                   return (
-                    <tr key={a.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s', background: 'var(--bg-card)' }}>
+                    <tr key={a.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s', background: 'var(--bg-card)', opacity: a.estado === 'Cancelada' ? 0.5 : 1 }}>
                       <td style={{ padding: '16px 24px' }}><input type="checkbox" /></td>
                       <td style={{ padding: '16px 12px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>{a.id.substring(0,3)}</td>
                       <td style={{ padding: '16px 12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{new Date(a.fecha + 'T12:00:00').toLocaleDateString('es-MX', {day:'2-digit', month:'2-digit', year:'numeric'})}</td>
-                      <td style={{ padding: '16px 12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{a.hora} a. m.</td>
-                      <td style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{a.clienteNombre.toUpperCase()}</td>
+                      <td style={{ padding: '16px 12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{a.hora}</td>
+                      <td style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', textDecoration: a.estado === 'Cancelada' ? 'line-through' : 'none' }}>{a.clienteNombre.toUpperCase()}</td>
                       <td style={{ padding: '16px 12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{a.motivo}</td>
-                      <td style={{ padding: '16px 12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:6 }}><User size={14}/> Reserva individual</div>
-                      </td>
                       <td style={{ padding: '16px 12px' }}>
                         <select 
                           value={a.estado} 
@@ -285,26 +306,49 @@ export default function Agenda() {
                             backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', paddingRight: '28px'
                           }}
                         >
-                          <option value="Aprobada" style={{ color: '#333' }}>✓ Aprobada</option>
                           <option value="Programada" style={{ color: '#333' }}>Programada</option>
                           <option value="Confirmada" style={{ color: '#333' }}>Confirmada</option>
                           <option value="Completada" style={{ color: '#333' }}>Completada</option>
                           <option value="Cancelada" style={{ color: '#333' }}>Cancelada</option>
+                          <option value="No asistió" style={{ color: '#333' }}>No asistió</option>
                         </select>
                       </td>
                       <td style={{ padding: '16px 12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <div style={{ width:28, height:28, borderRadius:'50%', background:'var(--accent-blue-light)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--accent-blue)' }}>
                             <User size={14} />
                           </div>
                           <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>{empName}</span>
-                          <span style={{ fontSize: '0.65rem', background: 'var(--accent-blue)', color: 'white', padding: '2px 8px', borderRadius: 12, fontWeight: 600 }}>Más populares</span>
                         </div>
                       </td>
-                      <td style={{ padding: '16px 24px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span>Despacho Fiscal 2087</span>
-                          <span style={{ cursor: 'pointer', fontWeight: 700, letterSpacing: '2px' }}>...</span>
+                      <td style={{ padding: '16px 24px' }}>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          {a.estado !== 'Cancelada' && a.estado !== 'Completada' && (
+                            <>
+                              <button
+                                className="btn btn-sm btn-outline"
+                                onClick={() => openReschedule(a)}
+                                title="Reagendar"
+                                style={{ borderRadius: 8, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--accent-blue)' }}
+                              >
+                                <RefreshCw size={14} /> Reagendar
+                              </button>
+                              <button
+                                className="btn btn-sm btn-outline"
+                                onClick={() => handleCancel(a)}
+                                title="Cancelar"
+                                style={{ borderRadius: 8, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--accent-red)' }}
+                              >
+                                <XCircle size={14} /> Cancelar
+                              </button>
+                            </>
+                          )}
+                          {a.estado === 'Cancelada' && (
+                            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Cancelada</span>
+                          )}
+                          {a.estado === 'Completada' && (
+                            <span style={{ fontSize: '0.78rem', color: 'var(--accent-green)', fontWeight: 600 }}>✓ Completada</span>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -347,6 +391,57 @@ export default function Agenda() {
               <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 24 }}>
                 <button className="btn btn-outline" onClick={() => setShowNewAppt(false)} style={{ borderRadius: 8 }}>Cancelar</button>
                 <button className="btn btn-primary" onClick={handleCreateAppointment} style={{ borderRadius: 8 }}>Guardar Cita</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── MODAL REAGENDAR ─── */}
+      {rescheduleAppt && (
+        <div className="modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+          <div className="card" style={{ width: '100%', maxWidth: 420, padding: 32, borderRadius: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 700 }}>🔄 Reagendar Cita</h2>
+              <button className="btn btn-sm btn-outline" onClick={() => setRescheduleAppt(null)} style={{ border: 'none', padding: 4 }}>
+                <X size={20} />
+              </button>
+            </div>
+            <div style={{ background: 'var(--bg-input)', padding: 16, borderRadius: 12, marginBottom: 24 }}>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 4 }}>Cliente</div>
+              <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>{rescheduleAppt.clienteNombre}</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: 8 }}>Servicio</div>
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{rescheduleAppt.motivo}</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="form-group">
+                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Nueva Fecha</label>
+                <input type="date" className="input" value={reschedFecha} onChange={e => setReschedFecha(e.target.value)} style={{ background: 'var(--bg-input)', border: '1px solid var(--border-color)' }} />
+              </div>
+              <div className="form-group">
+                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Nuevo Horario</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                  {OFFICE_HOURS.map(h => (
+                    <button
+                      key={h}
+                      onClick={() => setReschedHora(h)}
+                      style={{
+                        padding: '10px 0', borderRadius: 8, border: '1px solid var(--border-color)',
+                        background: reschedHora === h ? 'var(--accent-blue)' : 'var(--bg-input)',
+                        color: reschedHora === h ? '#fff' : 'var(--text-secondary)',
+                        fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.15s'
+                      }}
+                    >
+                      {h}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 16 }}>
+                <button className="btn btn-outline" onClick={() => setRescheduleAppt(null)} style={{ borderRadius: 8 }}>Cancelar</button>
+                <button className="btn btn-primary" onClick={handleReschedule} disabled={!reschedFecha || !reschedHora} style={{ borderRadius: 8 }}>
+                  <RefreshCw size={16} /> Reagendar
+                </button>
               </div>
             </div>
           </div>
