@@ -1,20 +1,25 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Package, BarChart3, Calendar, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Package, BarChart3, Calendar, LogOut, X } from 'lucide-react';
 import { useGlobalState } from '../context/GlobalState';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }: { isOpen?: boolean, onClose?: () => void }) {
   const { currentUser, logout } = useGlobalState();
   const isContador = currentUser?.rol === 'contador';
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-brand">
-        <h1>Sistema Despacho</h1>
-        <div className="brand-sub">
-          {currentUser
-            ? `${currentUser.nombre} (${isContador ? 'Contador' : 'Admin'})`
-            : 'Gestión de Expedientes'}
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div className="sidebar-brand" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>Sistema Despacho</h1>
+          <div className="brand-sub">
+            {currentUser
+              ? `${currentUser.nombre} (${isContador ? 'Contador' : 'Admin'})`
+              : 'Gestión de Expedientes'}
+          </div>
         </div>
+        <button className="mobile-close-btn" onClick={onClose} aria-label="Cerrar menú">
+          <X size={24} />
+        </button>
       </div>
       <nav className="sidebar-nav">
         {!isContador && (

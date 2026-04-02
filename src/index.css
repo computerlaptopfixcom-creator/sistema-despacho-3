@@ -844,5 +844,11 @@ tbody tr.clickable {
   .bk-main-footer { padding: 16px; }
   .bk-field-row { grid-template-columns: 1fr; }
   .bk-timeslot-grid { grid-template-columns: 1fr; }
+
+  /* Admin Dashboard Mobile Overrides */
+  .form-row { grid-template-columns: 1fr; gap: 12px; }
+  .card { padding: 16px; }
+  .page-header { margin-bottom: 16px; }
+  .table-container { padding-bottom: 16px; }
 }
 

@@ -93,3 +93,77 @@
   color: var(--sidebar-text);
   font-size: 0.72rem;
 }
+
+/* ---------- RESPONSIVE MOBILE LAYOUT ---------- */
+.mobile-header {
+  display: none;
+}
+.sidebar-overlay {
+  display: none;
+}
+.mobile-close-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: var(--sidebar-bg);
+    color: var(--text-white);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    width: 100%;
+  }
+  .mobile-header h1 {
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+  .mobile-menu-btn {
+    background: transparent;
+    color: var(--text-white);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 20px 16px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 300ms ease;
+    width: 280px;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 95;
+  }
+  .mobile-close-btn {
+    display: block;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+  }
+}

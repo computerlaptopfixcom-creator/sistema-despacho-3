@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import { useGlobalState } from './context/GlobalState';
 import Sidebar from './components/Sidebar';
 import Dashboard from './views/Dashboard';
@@ -17,6 +18,7 @@ import './App.css';
 function AdminLayout() {
   const { loading, currentUser } = useGlobalState();
   const isContador = currentUser?.rol === 'contador';
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (loading) {
     return (
@@ -37,7 +39,21 @@ function AdminLayout() {
 
   return (
     <div className="app-layout">
-      <Sidebar />
+      {/* Mobile Header (Only visible on max-width 768px) */}
+      <div className="mobile-header">
+        <div className="mobile-brand-title">
+          <h1>Sistema Despacho</h1>
+        </div>
+        <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+          <Menu size={24} />
+        </button>
+      </div>
+
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      
+      {/* Overlay to close sidebar on click outside */}
+      {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />}
+
       <main className="main-content">
         <Routes>
           {/* Contador solo puede ver Agenda */}
