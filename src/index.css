@@ -849,6 +849,29 @@ tbody tr.clickable {
   .form-row { grid-template-columns: 1fr; gap: 12px; }
   .card { padding: 16px; }
   .page-header { margin-bottom: 16px; }
-  .table-container { padding-bottom: 16px; }
+  .table-container { padding-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  
+  /* Prevenir que el texto de las tablas se aplaste (Activa el scroll horizontal limpio) */
+  table th, table td { white-space: nowrap; }
+
+  /* Asegurar que las botoneras principales envuelvan a los elementos (Stack vertical) */
+  .page-header > div:last-child {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+  .page-header .btn { width: 100%; justify-content: center; }
+
+  /* Modales: Apilar botones en la parte inferior */
+  .modal-actions {
+    flex-direction: column-reverse; /* El botón de cancelar queda abajo */
+    width: 100%;
+    gap: 12px;
+  }
+  .modal-actions .btn { width: 100%; justify-content: center; }
+
+  /* Botones en general que puedan estar compartiendo filas apretadas */
+  .card > div[style*="display: flex"] { flex-wrap: wrap; }
 }
 
