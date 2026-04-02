@@ -98,19 +98,19 @@ export default function Empleados() {
 
   return (
     <div className="view-container">
-      <header className="view-header">
-        <div className="header-title">
-          <div className="header-icon employees-icon">
+      <header className="page-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="stat-icon" style={{ background: 'var(--accent-blue-light)', color: 'var(--accent-blue)', width: 48, height: 48, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <UserIcon size={24} />
           </div>
           <div>
-            <h1>Empleados</h1>
-            <p>Gestiona el personal y los contadores del despacho</p>
+            <h1 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800 }}>Empleados</h1>
+            <p className="subtitle" style={{ margin: 0, marginTop: 4 }}>Gestiona el personal y los contadores del despacho</p>
           </div>
         </div>
 
-        <div className="header-actions" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <div className="search-bar">
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="search-bar" style={{ flex: 1, minWidth: 260 }}>
             <div className="search-icon"><Search size={18} /></div>
             <input
               type="text"
@@ -126,7 +126,7 @@ export default function Empleados() {
         </div>
       </header>
 
-      <div className="emp-filters" style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+      <div className="emp-filters" style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
         <button className={`btn btn-sm ${roleFilter === 'todos' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setRoleFilter('todos')}>Todos</button>
         <button className={`btn btn-sm ${roleFilter === 'admin' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setRoleFilter('admin')}>Administradores</button>
         <button className={`btn btn-sm ${roleFilter === 'contador' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setRoleFilter('contador')}>Contadores</button>
