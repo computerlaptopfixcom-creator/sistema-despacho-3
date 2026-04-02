@@ -93,12 +93,15 @@ export async function initDB(retries = 5) {
           client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
           filename TEXT NOT NULL,
           original_name TEXT NOT NULL,
+          custom_name TEXT,
           filepath TEXT NOT NULL,
           mimetype TEXT NOT NULL,
           size BIGINT NOT NULL,
           upload_date TIMESTAMPTZ DEFAULT NOW(),
           uploaded_by TEXT DEFAULT 'Administrador'
         );
+        
+        ALTER TABLE client_documents ADD COLUMN IF NOT EXISTS custom_name TEXT;
 
         ALTER TABLE users ALTER COLUMN password DROP DEFAULT;
         ALTER TABLE users ALTER COLUMN password DROP NOT NULL;

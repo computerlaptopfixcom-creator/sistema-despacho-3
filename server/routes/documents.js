@@ -48,7 +48,7 @@ router.get('/client/:clientId', async (req, res) => {
 // POST upload document for client
 router.post('/upload', upload.single('document'), async (req, res) => {
   try {
-    const { clientId } = req.body;
+    const { clientId, customName } = req.body;
     const file = req.file;
 
     if (!file) {
@@ -60,10 +60,12 @@ router.post('/upload', upload.single('document'), async (req, res) => {
       return res.status(400).json({ error: 'Falta proveer el ID del cliente' });
     }
 
+    const finalCustomName = customName && customName.trim() !== '' ? customName.trim() : file.originalname;
+
     const { rows } = await pool.query(
-      `INSERT INTO client_documents (client_id, filename, original_name, filepath, mimetype, size)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [clientId, file.filename, file.originalname, `/uploads/${file.filename}`, file.mimetype, file.size]
+      `INSERT INTO client_documents (client_id, filename, original_name, custom_name, filepath, mimetype, size)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [clientId, file.filename, file.originalname, finalCustomName, `/uploads/${file.filename}`, file.mimetype, file.size]
     );
 
     res.status(201).json(rows[0]);

@@ -8,6 +8,7 @@ interface Document {
   client_id: string;
   filename: string;
   original_name: string;
+  custom_name?: string;
   filepath: string;
   upload_date: string;
   size: number;
@@ -22,7 +23,9 @@ export default function Expediente() {
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
+  const [editEmail, setEditEmail] = useState('');
   const [editCurp, setEditCurp] = useState('');
+  const [editNss, setEditNss] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [showDelete, setShowDelete] = useState(false);
 
@@ -47,14 +50,27 @@ export default function Expediente() {
     }
   }, [activeTab, id]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !id) return;
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [customDocName, setCustomDocName] = useState('');
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setCustomDocName(file.name);
+      setShowUploadModal(true);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const confirmUpload = async () => {
+    if (!selectedFile || !id) return;
     setUploading(true);
     const formData = new FormData();
-    formData.append('document', file);
+    formData.append('document', selectedFile);
     formData.append('clientId', id);
+    formData.append('customName', customDocName.trim());
 
     try {
       const res = await fetch('/api/documents/upload', {
@@ -64,12 +80,14 @@ export default function Expediente() {
       if (res.ok) {
         const newDoc = await res.json();
         setDocuments(prev => [newDoc, ...prev]);
+        setShowUploadModal(false);
       }
     } catch (err) {
       console.error('Error uploading document:', err);
     } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      setSelectedFile(null);
+      setCustomDocName('');
     }
   };
 
@@ -106,7 +124,9 @@ export default function Expediente() {
   const startEdit = () => {
     setEditName(client.nombre);
     setEditPhone(client.telefono);
+    setEditEmail(client.email || '');
     setEditCurp(client.curp || '');
+    setEditNss(client.nss || '');
     setEditNotes(client.notasGenerales || '');
     setEditing(true);
   };
@@ -116,7 +136,9 @@ export default function Expediente() {
     updateClient(client.id, {
       nombre: editName.trim(),
       telefono: editPhone.trim(),
+      email: editEmail.trim() || undefined,
       curp: editCurp.trim() || undefined,
+      nss: editNss.trim() || undefined,
       notasGenerales: editNotes.trim() || undefined,
     });
     setEditing(false);
@@ -233,10 +255,18 @@ export default function Expediente() {
           </div>
 
           {!editing ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
+              <div>
+                <p className="text-secondary text-sm" style={{ fontWeight: 600, marginBottom: 4 }}>Correo Electrónico</p>
+                <p>{client.email || 'No registrado'}</p>
+              </div>
               <div>
                 <p className="text-secondary text-sm" style={{ fontWeight: 600, marginBottom: 4 }}>CURP</p>
                 <p>{client.curp || 'No registrado'}</p>
+              </div>
+              <div>
+                <p className="text-secondary text-sm" style={{ fontWeight: 600, marginBottom: 4 }}>Número de Seguro Social</p>
+                <p>{client.nss || 'No registrado'}</p>
               </div>
               <div>
                 <p className="text-secondary text-sm" style={{ fontWeight: 600, marginBottom: 4 }}>Fecha de Alta</p>
@@ -262,8 +292,18 @@ export default function Expediente() {
                 </div>
               </div>
               <div className="form-group">
-                <label>CURP (opcional)</label>
-                <input value={editCurp} onChange={e => setEditCurp(e.target.value)} placeholder="Ej: LOHE800101MCHPRR09" />
+                <label>Correo Electrónico (opcional)</label>
+                <input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="cliente@correo.com" />
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>CURP (opcional)</label>
+                  <input value={editCurp} onChange={e => setEditCurp(e.target.value)} placeholder="Ej: LOHE800101MCHPRR09" />
+                </div>
+                <div className="form-group">
+                  <label>NSS (opcional)</label>
+                  <input value={editNss} onChange={e => setEditNss(e.target.value)} placeholder="Ej: 12345678901" />
+                </div>
               </div>
               <div className="form-group">
                 <label>Notas generales (opcional)</label>
@@ -327,7 +367,7 @@ export default function Expediente() {
                 type="file"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                onChange={handleFileUpload}
+                onChange={handleFileSelect}
                 accept="image/*,.pdf"
               />
               <button 
@@ -357,9 +397,11 @@ export default function Expediente() {
                       {doc.original_name.endsWith('.pdf') ? <FileText size={20} /> : <FileArchive size={20} />}
                     </div>
                     <div>
-                      <p style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: 2 }}>{doc.original_name}</p>
-                      <p className="text-secondary text-sm">
-                        Subido: {formatDate(doc.upload_date)} • {(doc.size / 1024 / 1024).toFixed(2)} MB
+                      <p style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-white)' }}>
+                        {doc.custom_name || doc.original_name}
+                      </p>
+                      <p className="text-secondary text-sm" style={{ fontSize: '0.8rem', marginTop: 2 }}>
+                        Archivo: {doc.original_name} • Subido: {formatDate(doc.upload_date)} • {(doc.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
                   </div>
@@ -381,6 +423,61 @@ export default function Expediente() {
               <p className="text-sm">Aprieta "Subir Escaneo" para agregar el primer documento.</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Upload Document Modal */}
+      {showUploadModal && selectedFile && (
+        <div className="modal-overlay" onClick={() => !uploading && setShowUploadModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h2>Subir Documento</h2>
+              <button className="btn btn-outline btn-sm" style={{ padding: 4, height: 'auto' }} onClick={() => setShowUploadModal(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            
+            <p className="text-secondary mb-4">
+              Introduce un nombre descriptivo para identificar rápidamente este archivo en el expediente.
+            </p>
+            
+            <div className="form-group">
+              <label>Nombre del Documento</label>
+              <input 
+                type="text" 
+                value={customDocName} 
+                onChange={e => setCustomDocName(e.target.value)} 
+                placeholder="Ej. Identificación Oficial (INE)"
+                autoFocus
+              />
+            </div>
+            
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
+              {["Copia de INE", "Situación Fiscal", "Comprobante Domicilio", "CURP", "Semanas Cotizadas"].map(sug => (
+                <button 
+                  key={sug} 
+                  className="badge badge-purple" 
+                  onClick={() => setCustomDocName(sug)} 
+                  style={{ cursor: 'pointer', border: 'none' }}
+                >
+                  {sug}
+                </button>
+              ))}
+            </div>
+
+            <div className="modal-actions">
+              <button 
+                className="btn btn-outline" 
+                onClick={() => { setShowUploadModal(false); setSelectedFile(null); }}
+                disabled={uploading}
+              >
+                Cancelar
+              </button>
+              <button className="btn btn-primary" onClick={confirmUpload} disabled={uploading}>
+                {uploading ? 'Guardando...' : 'Guardar en Expediente'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
