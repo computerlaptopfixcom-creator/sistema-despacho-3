@@ -954,3 +954,83 @@ tbody tr.clickable {
   .card > div[style*="display: flex"] { flex-wrap: wrap; }
 }
 
+/* ── Employee Selection Cards ── */
+.bk-employee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.bk-employee-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+.bk-employee-card:hover {
+  border-color: #93c5fd;
+  background: #f1f5f9;
+}
+.bk-employee-card.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+}
+.bk-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.bk-employee-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bk-employee-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+.bk-employee-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 8px;
+  border-radius: 99px;
+  width: fit-content;
+}
+.bk-employee-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  transition: all 200ms ease;
+  flex-shrink: 0;
+}
+.bk-employee-card.selected .bk-employee-check {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
