@@ -266,17 +266,25 @@ export default function Visita() {
             <h3 style={{ marginBottom: 12, fontSize: '0.95rem' }}>Notas de la Atención</h3>
             <div className="form-group">
               <label>Atendido por</label>
-              <input
+              <select
                 value={atendidoPor}
-                onChange={e => setAtendidoPor(e.target.value)}
-                placeholder="Nombre del asesor"
-              />
+                onChange={e => {
+                  setAtendidoPor(e.target.value);
+                  updateVisit(visit!.id, { atendidoPor: e.target.value });
+                }}
+              >
+                <option value="">Selecciona asesor...</option>
+                {db.users.filter(u => u.activo && u.visible !== false).map(u => (
+                  <option key={u.id} value={u.nombre}>{u.nombre}</option>
+                ))}
+              </select>
             </div>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label>Notas / Bitácora</label>
               <textarea
                 value={notas}
                 onChange={e => setNotas(e.target.value)}
+                onBlur={handleSave}
                 placeholder="Descripción del caso, hallazgos, decisiones tomadas..."
                 style={{ minHeight: 120 }}
               />
@@ -369,59 +377,6 @@ export default function Visita() {
                 No se han agregado servicios a esta atención.
               </p>
             )}
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* Document Checklist */}
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h3 style={{ fontSize: '0.95rem' }}>Documentos</h3>
-              <span className="text-sm text-muted">
-                <FileCheck size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> {docs.filter(d => d.recibido).length}/{docs.length} recibidos
-              </span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {docs.map((doc, i) => (
-                <button
-                  key={i}
-                  onClick={() => toggleDoc(i)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '10px 14px',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--border-color)',
-                    background: doc.recibido ? 'var(--accent-green-light)' : 'var(--bg-card)',
-                    cursor: 'pointer',
-                    transition: 'all 150ms ease',
-                    textAlign: 'left',
-                    fontSize: '0.88rem',
-                    color: doc.recibido ? 'var(--accent-green)' : 'var(--text-primary)',
-                    fontWeight: doc.recibido ? 600 : 400,
-                  }}
-                >
-                  {doc.recibido ? <CheckCircle2 size={18} /> : <Circle size={18} style={{ color: 'var(--text-muted)' }} />}
-                  {doc.nombre}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Missing Documents */}
-          <div className="card">
-            <h3 style={{ marginBottom: 12, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <FileX size={16} style={{ color: 'var(--accent-red)' }} />
-              Documentos Faltantes / Pendientes
-            </h3>
-            <textarea
-              value={docsFaltantes}
-              onChange={e => setDocsFaltantes(e.target.value)}
-              placeholder="Ej: Falta traer constancia de semanas original..."
-              style={{ minHeight: 80 }}
-            />
           </div>
 
           {/* Payment Section */}
