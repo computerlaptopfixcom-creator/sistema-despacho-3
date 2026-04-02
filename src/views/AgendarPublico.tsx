@@ -310,9 +310,7 @@ export default function AgendarPublico() {
                 >
                   <option value="">Selecciona el servicio</option>
                   {services.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.nombre} — {Number(s.precioBase).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
-                    </option>
+                    <option key={s.id} value={s.id}>{s.nombre}</option>
                   ))}
                 </select>
               </div>
