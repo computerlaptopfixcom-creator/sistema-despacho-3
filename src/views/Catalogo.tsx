@@ -20,9 +20,7 @@ export default function Catalogo() {
     atiende: '',
   });
 
-  const filtered = filterCat === 'Todas'
-    ? db.services
-    : db.services.filter(s => s.categoria === filterCat);
+  const filtered = db.services;
 
   const resetForm = () => {
     setForm({ nombre: '', categoria: 'General', descripcion: '', precioBase: '', duracion: '60 min', atiende: '' });
@@ -124,18 +122,7 @@ export default function Catalogo() {
         </button>
       </div>
 
-      {/* Category Filter */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-        {['Todas', ...CATEGORIES].map(cat => (
-          <button
-            key={cat}
-            onClick={() => setFilterCat(cat)}
-            className={`btn btn-sm ${filterCat === cat ? 'btn-primary' : 'btn-outline'}`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+
 
       {/* Services Table */}
       <div className="card">
@@ -145,7 +132,6 @@ export default function Catalogo() {
               <thead>
                 <tr>
                   <th>Servicio</th>
-                  <th>Categoría</th>
                   <th>Atiende</th>
                   <th>Descripción</th>
                   <th>Precio Base</th>
@@ -163,7 +149,6 @@ export default function Catalogo() {
                         <span style={{ fontSize: '0.95rem' }}>{s.nombre}</span>
                       </div>
                     </td>
-                    <td><span className={`badge ${getCatBadge(s.categoria)}`}>{s.categoria}</span></td>
                     <td className="text-secondary">
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         {(() => {
@@ -280,15 +265,6 @@ export default function Catalogo() {
             </div>
 
             <div className="form-row">
-              <div className="form-group">
-                <label>Categoría *</label>
-                <select
-                  value={form.categoria}
-                  onChange={e => setForm(p => ({ ...p, categoria: e.target.value as Service['categoria'] }))}
-                >
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
               <div className="form-group">
                 <label>Precio base (MXN) *</label>
                 <input
