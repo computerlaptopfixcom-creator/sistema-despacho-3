@@ -195,9 +195,11 @@ export default function Agenda() {
               <button className="btn btn-outline btn-sm" style={{ borderRadius: 8 }}><Download size={16} /></button>
             </div>
           )}
-          <button className="btn btn-primary btn-sm" onClick={() => setShowNewAppt(true)} style={{ borderRadius: 8, whiteSpace: 'nowrap' }}>
-            <Plus size={16} /> {activeTab === 'calendario' ? 'Añadir' : 'Reservar cita'}
-          </button>
+          {!isContador && (
+            <button className="btn btn-primary btn-sm" onClick={() => setShowNewAppt(true)} style={{ borderRadius: 8, whiteSpace: 'nowrap' }}>
+              <Plus size={16} /> {activeTab === 'calendario' ? 'Añadir' : 'Reservar cita'}
+            </button>
+          )}
         </div>
       </div>
 
