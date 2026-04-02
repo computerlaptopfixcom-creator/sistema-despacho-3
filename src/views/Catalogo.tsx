@@ -256,10 +256,11 @@ export default function Catalogo() {
                   const selectedIds = form.atiende ? form.atiende.split(',') : [];
                   const isSelected = selectedIds.includes(u.id);
                   return (
-                    <label key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                    <label key={u.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 12, cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text-primary)', margin: 0, padding: '4px 0' }}>
                       <input 
                         type="checkbox" 
                         checked={isSelected}
+                        style={{ width: '18px', height: '18px', margin: 0, cursor: 'pointer', accentColor: 'var(--accent-blue)' }}
                         onChange={(e) => {
                           let newIds = [...selectedIds];
                           if (e.target.checked) newIds.push(u.id);
@@ -267,7 +268,10 @@ export default function Catalogo() {
                           setForm(p => ({ ...p, atiende: newIds.join(',') }));
                         }}
                       />
-                      <User size={14} style={{ color: 'var(--accent-blue)' }}/> {u.nombre}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <User size={16} style={{ color: 'var(--accent-blue)' }}/> 
+                        <span style={{ fontWeight: 500 }}>{u.nombre}</span>
+                      </div>
                     </label>
                   );
                 })}
