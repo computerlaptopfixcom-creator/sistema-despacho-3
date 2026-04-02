@@ -60,7 +60,7 @@ export type Visit = {
   totalServicios: number;
 };
 
-export type AppointmentStatus = 'Programada' | 'Confirmada' | 'Completada' | 'Cancelada' | 'No asistió';
+export type AppointmentStatus = 'Aprobada' | 'Programada' | 'Confirmada' | 'Completada' | 'Cancelada' | 'No asistió';
 
 export type Appointment = {
   id: string;

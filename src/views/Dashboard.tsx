@@ -80,7 +80,7 @@ export default function Dashboard() {
     }
 
     // Upcoming appointments today
-    const todayAppts = db.appointments.filter(a => a.fecha === today && (a.estado === 'Programada' || a.estado === 'Confirmada'));
+    const todayAppts = db.appointments.filter(a => a.fecha === today && (a.estado === 'Aprobada' || a.estado === 'Programada' || a.estado === 'Confirmada'));
     if (todayAppts.length > 0) {
       items.push({
         type: 'info',

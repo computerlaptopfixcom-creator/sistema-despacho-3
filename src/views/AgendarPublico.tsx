@@ -153,7 +153,7 @@ export default function AgendarPublico() {
           hora: selectedHora,
           motivo: selectedService?.nombre || 'Consulta general',
           metodoPago,
-          estado: 'Programada',
+          estado: 'Aprobada',
         }),
       });
       setDone(true);

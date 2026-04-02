@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CalendarPlus, Calendar, List, ChevronLeft, ChevronRight, Search, Plus, Filter, Download, User, RefreshCw, XCircle, X } from 'lucide-react';
+import { CalendarPlus, Calendar, List, ChevronLeft, ChevronRight, Search, Plus, Filter, Download, User, RefreshCw, XCircle, X, CheckCircle } from 'lucide-react';
 import { useGlobalState } from '../context/GlobalState';
 import type { Appointment, AppointmentStatus } from '../types';
 
@@ -105,6 +105,7 @@ export default function Agenda() {
   };
 
   const statusConfig: Record<AppointmentStatus, { color: string; badge: string }> = {
+    'Aprobada': { color: '#10b981', badge: 'badge-green' },       // green — default for new bookings
     'Programada': { color: '#3b82f6', badge: 'badge-blue' },     // blue
     'Confirmada': { color: '#8b5cf6', badge: 'badge-purple' },   // purple
     'Completada': { color: '#10b981', badge: 'badge-green' },    // green
@@ -127,7 +128,7 @@ export default function Agenda() {
       fecha: apptFecha,
       hora: apptHora,
       motivo: apptMotivo.trim() || 'Consulta general',
-      estado: 'Programada',
+      estado: 'Aprobada',
       assigned_to: currentUser?.id, // Auto-assign to self for now if accountant, or null
     };
 
@@ -288,23 +289,14 @@ export default function Agenda() {
                       <td style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', textDecoration: a.estado === 'Cancelada' ? 'line-through' : 'none' }}>{a.clienteNombre.toUpperCase()}</td>
                       <td style={{ padding: '16px 12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{a.motivo}</td>
                       <td style={{ padding: '16px 12px' }}>
-                        <select 
-                          value={a.estado} 
-                          onChange={(e) => updateAppointment(a.id, { estado: e.target.value as AppointmentStatus })}
-                          style={{
-                            padding: '6px 12px', borderRadius: '20px', border: `1px solid ${statusConfig[a.estado]?.color || '#ccc'}40`,
-                            background: `${statusConfig[a.estado]?.color || '#ccc'}10`, color: statusConfig[a.estado]?.color || '#333',
-                            fontSize: '0.75rem', fontWeight: 600, outline: 'none', cursor: 'pointer', appearance: 'none',
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='${(statusConfig[a.estado]?.color || '#333').replace('#', '%23')}' viewBox='0 0 24 24' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-                            backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', paddingRight: '28px'
-                          }}
-                        >
-                          <option value="Programada" style={{ color: '#333' }}>Programada</option>
-                          <option value="Confirmada" style={{ color: '#333' }}>Confirmada</option>
-                          <option value="Completada" style={{ color: '#333' }}>Completada</option>
-                          <option value="Cancelada" style={{ color: '#333' }}>Cancelada</option>
-                          <option value="No asistió" style={{ color: '#333' }}>No asistió</option>
-                        </select>
+                        <span style={{
+                          padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600,
+                          border: `1px solid ${statusConfig[a.estado]?.color || '#ccc'}40`,
+                          background: `${statusConfig[a.estado]?.color || '#ccc'}10`,
+                          color: statusConfig[a.estado]?.color || '#333'
+                        }}>
+                          {a.estado}
+                        </span>
                       </td>
                       <td style={{ padding: '16px 12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -315,24 +307,32 @@ export default function Agenda() {
                         </div>
                       </td>
                       <td style={{ padding: '16px 24px' }}>
-                        <div style={{ display: 'flex', gap: 8 }}>
+                        <div style={{ display: 'flex', gap: 6 }}>
                           {a.estado !== 'Cancelada' && a.estado !== 'Completada' && (
                             <>
                               <button
                                 className="btn btn-sm btn-outline"
                                 onClick={() => openReschedule(a)}
                                 title="Reagendar"
-                                style={{ borderRadius: 8, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--accent-blue)' }}
+                                style={{ borderRadius: 8, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', color: 'var(--accent-blue)' }}
                               >
-                                <RefreshCw size={14} /> Reagendar
+                                <RefreshCw size={13} /> Reagendar
                               </button>
                               <button
                                 className="btn btn-sm btn-outline"
                                 onClick={() => handleCancel(a)}
                                 title="Cancelar"
-                                style={{ borderRadius: 8, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--accent-red)' }}
+                                style={{ borderRadius: 8, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', color: 'var(--accent-red)' }}
                               >
-                                <XCircle size={14} /> Cancelar
+                                <XCircle size={13} /> Cancelar
+                              </button>
+                              <button
+                                className="btn btn-sm btn-outline"
+                                onClick={() => updateAppointment(a.id, { estado: 'Completada' as AppointmentStatus })}
+                                title="Marcar como finalizada"
+                                style={{ borderRadius: 8, padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', color: 'var(--accent-green)' }}
+                              >
+                                <CheckCircle size={13} /> Finalizada
                               </button>
                             </>
                           )}
@@ -340,7 +340,7 @@ export default function Agenda() {
                             <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Cancelada</span>
                           )}
                           {a.estado === 'Completada' && (
-                            <span style={{ fontSize: '0.78rem', color: 'var(--accent-green)', fontWeight: 600 }}>✓ Completada</span>
+                            <span style={{ fontSize: '0.78rem', color: 'var(--accent-green)', fontWeight: 600 }}>✓ Finalizada</span>
                           )}
                         </div>
                       </td>
