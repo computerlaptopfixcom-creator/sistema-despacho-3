@@ -185,36 +185,29 @@ export default function AgendarPublico() {
     return items;
   };
 
-  /* ─── ICS Calendar Download ─── */
-  const downloadICS = () => {
+  /* ─── Google Calendar Link ─── */
+  const openGoogleCalendar = () => {
     const [h] = selectedHora.split(':').map(Number);
     const pad = (n: number) => String(n).padStart(2, '0');
     const [y, m, d] = selectedDate.split('-');
     const dtStart = `${y}${m}${d}T${pad(h)}0000`;
     const dtEnd = `${y}${m}${d}T${pad(h + 1)}0000`;
+    
+    const title = `Cita - ${selectedService?.nombre || 'Consulta'} | Despacho Fiscal 2087`;
     const asesor = getEmployeeName(atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : ''));
-    const ics = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//Despacho Fiscal 2087//Cita//ES',
-      'BEGIN:VEVENT',
-      `DTSTART;TZID=America/Chicago:${dtStart}`,
-      `DTEND;TZID=America/Chicago:${dtEnd}`,
-      `SUMMARY:Cita - ${selectedService?.nombre || 'Consulta'} | Despacho Fiscal 2087`,
-      `LOCATION:C. Toronja Roja 6275\\, Ampliación Aeropuerto\\, 32698 Juárez\\, Chih.`,
-      `DESCRIPTION:Asesor: ${asesor}\\nPago: ${metodoPago}\\nTeléfono: +52 656 533 4271`,
-      'STATUS:CONFIRMED',
-      `ORGANIZER;CN=Despacho Fiscal 2087:mailto:info@despachofiscal2087.com.mx`,
-      'END:VEVENT',
-      'END:VCALENDAR',
-    ].join('\r\n');
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'cita-despacho-fiscal-2087.ics';
-    a.click();
-    URL.revokeObjectURL(url);
+    const details = `Asesor: ${asesor}\nPago: ${metodoPago}\nTeléfono: +52 656 533 4271`;
+    const location = `C. Toronja Roja 6275, Ampliación Aeropuerto, 32698 Juárez, Chih.`;
+    
+    const params = new URLSearchParams({
+      action: 'TEMPLATE',
+      text: title,
+      dates: `${dtStart}/${dtEnd}`,
+      ctz: 'America/Ciudad_Juarez',
+      details: details,
+      location: location,
+    });
+    
+    window.open(`https://calendar.google.com/calendar/render?${params.toString()}`, '_blank');
   };
 
   /* ─── RENDER ─── */
@@ -272,7 +265,7 @@ export default function AgendarPublico() {
 
               <p className="bk-success-msg">Le contactaremos para confirmar su cita.</p>
               <div className="bk-success-actions">
-                <button className="bk-btn bk-btn-secondary" onClick={downloadICS}>📅 Agregar al calendario</button>
+                <button className="bk-btn bk-btn-secondary" onClick={openGoogleCalendar}>📆 Agregar a Google Calendar</button>
                 <button className="bk-btn bk-btn-primary" onClick={reset}>Terminar</button>
               </div>
             </div>
