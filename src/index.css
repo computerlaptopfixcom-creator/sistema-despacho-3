@@ -945,13 +945,22 @@ tbody tr.clickable {
 
   /* ── Rest of mobile overrides ── */
   .bk-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .bk-cal-cell { padding: 6px 2px !important; font-size: 0.85rem !important; }
-  .bk-content { padding: 20px 16px; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .bk-main-header { padding: 16px 16px 0; flex-shrink: 0; }
-  .bk-main-footer { padding: 16px; flex-shrink: 0; }
-  .bk-field-row { grid-template-columns: 1fr; }
-  .bk-timeslot-grid { grid-template-columns: 1fr; }
-  .bk-payment-methods { flex-direction: column; }
+  .bk-cal-cell { padding: 4px 1px !important; font-size: 0.75rem !important; }
+  .bk-cal-grid { margin-bottom: 12px; gap: 2px; }
+  .bk-timeslot { padding: 8px 4px !important; font-size: 0.75rem !important; }
+  .bk-content { padding: 10px 12px; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .bk-main-header { padding: 12px 12px 0; flex-shrink: 0; }
+  .bk-main-header h2 { font-size: 1.1rem; }
+  .bk-main-footer { padding: 12px; flex-shrink: 0; }
+  .bk-field-row { grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px !important; }
+  .bk-timeslot-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .bk-payment-methods { flex-direction: row; gap: 8px; }
+  .bk-payment-card { padding: 10px 8px; gap: 4px; }
+  .bk-payment-icon { font-size: 1.2rem; }
+  .bk-payment-label { font-size: 0.8rem; }
+  .bk-ticket { padding: 12px; gap: 4px; border-radius: 8px; }
+  .bk-ticket-row { font-size: 0.75rem; }
+  .bk-confirm-box h3 { margin-bottom: 8px; font-size: 0.9rem; }
 
   /* Admin Dashboard Mobile Overrides */
   .form-row { grid-template-columns: 1fr; gap: 12px; }
