@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Save, X, Package, FileSearch, ScrollText, BookOpenCheck, Scale, Coins } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Package, FileSearch, ScrollText, BookOpenCheck, Scale, Coins, User } from 'lucide-react';
 import { useGlobalState } from '../context/GlobalState';
 import type { Service } from '../types';
 
@@ -164,7 +164,42 @@ export default function Catalogo() {
                       </div>
                     </td>
                     <td><span className={`badge ${getCatBadge(s.categoria)}`}>{s.categoria}</span></td>
-                    <td className="text-secondary">{s.atiende || '—'}</td>
+                    <td className="text-secondary">
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {(() => {
+                           if (!s.atiende) return '—';
+                           
+                           const atiendeIds = s.atiende.split(/[,/]/).map(x => x.trim());
+                           let matchedUsers = atiendeIds.map(idOrName => db.users.find(u => u.id === idOrName || u.nombre.toLowerCase().includes(idOrName.toLowerCase()))).filter(Boolean);
+                           
+                           if (matchedUsers.length === 0) return <span>{s.atiende}</span>;
+
+                           matchedUsers = Array.from(new Set(matchedUsers));
+
+                           if (matchedUsers.length === 1) {
+                             const u = matchedUsers[0];
+                             return (
+                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                 <div title={u!.nombre} style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--accent-blue-light)', color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <User size={14} />
+                                 </div>
+                                 <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 500 }}>{u!.nombre}</span>
+                               </div>
+                             );
+                           }
+
+                           return (
+                             <div style={{ display: 'flex', alignItems: 'center' }}>
+                               {matchedUsers.map((u, i) => (
+                                  <div key={i} title={u!.nombre} style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid white', background: 'var(--accent-blue-light)', color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: i > 0 ? -12 : 0, zIndex: 10 - i }}>
+                                    <User size={14} />
+                                  </div>
+                               ))}
+                             </div>
+                           );
+                        })()}
+                      </div>
+                    </td>
                     <td className="text-secondary text-sm" style={{ maxWidth: 250 }}>{s.descripcion || '—'}</td>
                     <td style={{ fontWeight: 700, fontSize: '1rem' }}>{formatMoney(s.precioBase)}</td>
                     <td className="text-secondary">{s.duracion || '60 min'}</td>
@@ -215,12 +250,29 @@ export default function Catalogo() {
             </div>
             
             <div className="form-group">
-              <label>¿Quién atiende este servicio?</label>
-              <input
-                value={form.atiende}
-                onChange={e => setForm(p => ({ ...p, atiende: e.target.value }))}
-                placeholder="Ej: Gerardo Huerta / Christian Huerta"
-              />
+              <label>¿Quién atiende este servicio? (Opcional, elige múltiples)</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, background: 'var(--bg-input)', padding: 12, borderRadius: 8, border: '1px solid var(--border-color)', maxHeight: 150, overflowY: 'auto' }}>
+                {db.users.filter(u => u.rol === 'contador' || u.rol === 'admin').map(u => {
+                  const selectedIds = form.atiende ? form.atiende.split(',') : [];
+                  const isSelected = selectedIds.includes(u.id);
+                  return (
+                    <label key={u.id} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={isSelected}
+                        onChange={(e) => {
+                          let newIds = [...selectedIds];
+                          if (e.target.checked) newIds.push(u.id);
+                          else newIds = newIds.filter(id => id !== u.id);
+                          setForm(p => ({ ...p, atiende: newIds.join(',') }));
+                        }}
+                      />
+                      <User size={14} style={{ color: 'var(--accent-blue)' }}/> {u.nombre}
+                    </label>
+                  );
+                })}
+                {db.users.length === 0 && <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>No hay usuarios (contadores) registrados. Añádelos en la pestaña Empleados.</span>}
+              </div>
             </div>
 
             <div className="form-row">
