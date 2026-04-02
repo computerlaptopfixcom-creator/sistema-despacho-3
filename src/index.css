@@ -1034,3 +1034,38 @@ tbody tr.clickable {
   color: white;
 }
 
+/* ── Phone Input with Flag ── */
+.bk-phone-input {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  transition: border-color .2s;
+}
+.bk-phone-input:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+.bk-phone-prefix {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 10px;
+  font-size: .9rem;
+  font-weight: 500;
+  color: #475569;
+  background: #f8fafc;
+  border-right: 1.5px solid #e2e8f0;
+  white-space: nowrap;
+  user-select: none;
+}
+.bk-phone-input input {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  flex: 1;
+  padding: 10px 12px;
+  font-size: .95rem;
+}

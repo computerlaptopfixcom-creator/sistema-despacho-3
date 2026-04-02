@@ -29,6 +29,7 @@ export default function AgendarPublico() {
   const [booked, setBooked] = useState<BookedSlot[]>([]);
   // Step 3: Personal
   const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
   const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
   // State
@@ -127,7 +128,7 @@ export default function AgendarPublico() {
   const canNext = (s: number) => {
     if (s === 0) return !!selectedServiceId && (atiendeOptions.length <= 1 || !!atiendeSeleccionado);
     if (s === 1) return !!selectedDate && !!selectedHora;
-    if (s === 2) return !!nombre.trim() && !!telefono.trim() && !!email.trim();
+    if (s === 2) return !!nombre.trim() && !!apellido.trim() && !!telefono.trim() && !!email.trim();
     return false;
   };
 
@@ -139,7 +140,7 @@ export default function AgendarPublico() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: crypto.randomUUID(),
-          clienteNombre: nombre.trim(),
+          clienteNombre: `${nombre.trim()} ${apellido.trim()}`,
           clienteTelefono: telefono.trim(),
           clienteEmail: email.trim(),
           atiendeSeleccionado: atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : ''),
@@ -160,7 +161,7 @@ export default function AgendarPublico() {
   const reset = () => {
     setStep(0); setSelectedServiceId(''); setAtiendeSeleccionado('');
     setSelectedDate(''); setSelectedHora('');
-    setNombre(''); setTelefono(''); setEmail('');
+    setNombre(''); setApellido(''); setTelefono(''); setEmail('');
     setDone(false);
   };
 
@@ -429,8 +430,12 @@ export default function AgendarPublico() {
             <div className="bk-content">
               <div className="bk-field-row">
                 <div className="bk-field">
-                  <label>* Nombre completo:</label>
-                  <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Ej: Juan Pérez López" autoFocus />
+                  <label>* Nombre:</label>
+                  <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Ej: David" autoFocus />
+                </div>
+                <div className="bk-field">
+                  <label>* Apellido:</label>
+                  <input value={apellido} onChange={e => setApellido(e.target.value)} placeholder="Ej: Hernández" />
                 </div>
               </div>
               <div className="bk-field-row">
@@ -440,7 +445,10 @@ export default function AgendarPublico() {
                 </div>
                 <div className="bk-field">
                   <label>Teléfono:</label>
-                  <input value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="+52 656 123 4567" type="tel" />
+                  <div className="bk-phone-input">
+                    <span className="bk-phone-prefix">🇲🇽 +52</span>
+                    <input value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="Introducir teléfono" type="tel" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -459,9 +467,9 @@ export default function AgendarPublico() {
                   <div className="bk-ticket-row"><span>Fecha:</span><strong>{new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</strong></div>
                   <div className="bk-ticket-row"><span>Hora:</span><strong>{formatHourRange(selectedHora)}</strong></div>
                   <hr />
-                  <div className="bk-ticket-row"><span>Nombre:</span><strong>{nombre}</strong></div>
+                  <div className="bk-ticket-row"><span>Nombre:</span><strong>{nombre} {apellido}</strong></div>
                   <div className="bk-ticket-row"><span>Correo:</span><strong>{email}</strong></div>
-                  <div className="bk-ticket-row"><span>Teléfono:</span><strong>{telefono}</strong></div>
+                  <div className="bk-ticket-row"><span>Teléfono:</span><strong>+52 {telefono}</strong></div>
                 </div>
                 <p className="bk-confirm-note">El pago se realizará en el sitio al momento de su cita.</p>
               </div>
