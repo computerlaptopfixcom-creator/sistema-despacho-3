@@ -23,7 +23,7 @@ El sistema cuenta con un modelo de doble acceso para garantizar la privacidad y 
   - **Vista Lista de Reservas** con tabla rica, menús desplegables para Estado y etiquetas de empleados designados.
 - **Control de Visitas**: Registro detallado con servicios brindados y sub-totales.
 - **Finanzas y Pagos**: Seguimiento de abonos, saldos pendientes y generación de **Recibos PDF**.
-- **Catálogo de Servicios Interactivo**: Creación, edición y borrado con despliegue de **iconos visuales dinámicos** según la categoría y servicio mapeado.
+- **Catálogo de Servicios Avanzado**: Gestión CRUD con **iconos visuales dinámicos** y **asignación múltiple** (Multi-select) que vincula la base de datos de usuarios a cada servicio para automatizar las reservas y mostrar los avatares correspondientes.
 ### 3. Portal de Clientes (Público)
 - **Ruta Autónoma**: `/agendar`
 - **Mobile-first**: Formulario de 3 pasos diseñado para facilidad de uso (edad 55-60+).
