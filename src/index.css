@@ -1175,3 +1175,37 @@ tbody tr.clickable {
   color: #64748b;
   font-style: italic;
 }
+
+/* ── Location Box (Success Screen) ── */
+.bk-location-box {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  text-align: center;
+}
+.bk-location-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+.bk-location-link {
+  display: inline-block;
+  font-size: 0.88rem;
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 150ms;
+}
+.bk-location-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+.bk-location-phone {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}

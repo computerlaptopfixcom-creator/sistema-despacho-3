@@ -218,11 +218,26 @@ export default function AgendarPublico() {
                 <div className="bk-ticket-row"><span>Servicio:</span><strong>{selectedService?.nombre}</strong></div>
                   <div className="bk-ticket-row"><span>Asesor:</span><strong>{getEmployeeName(atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : 'Por asignar'))}</strong></div>
                 <div className="bk-ticket-row"><span>Precio:</span><strong>{Number(selectedService?.precioBase || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</strong></div>
+                <div className="bk-ticket-row"><span>Pago:</span><strong>{metodoPago === 'efectivo' ? '💵 Efectivo' : '💳 Tarjeta'}</strong></div>
                 <hr />
-                <div className="bk-ticket-row"><span>Tu nombre:</span><strong>{nombre}</strong></div>
+                <div className="bk-ticket-row"><span>Tu nombre:</span><strong>{nombre} {apellido}</strong></div>
                 <div className="bk-ticket-row"><span>Correo:</span><strong>{email}</strong></div>
-                <div className="bk-ticket-row"><span>Teléfono:</span><strong>{telefono}</strong></div>
+                <div className="bk-ticket-row"><span>Teléfono:</span><strong>+52 {telefono}</strong></div>
               </div>
+
+              <div className="bk-location-box">
+                <div className="bk-location-title">📍 Dirección de la cita</div>
+                <a
+                  href="https://www.google.com/maps/place/?q=place_id:ChIJX5YxYz9e54YRqYw3rIR4omo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bk-location-link"
+                >
+                  C. Toronja Roja 6275, Ampliación Aeropuerto, 32698 Juárez, Chih.
+                </a>
+                <div className="bk-location-phone">📞 +52 656 533 4271</div>
+              </div>
+
               <p className="bk-success-msg">Le contactaremos para confirmar su cita.</p>
               <button className="bk-btn bk-btn-primary" onClick={reset}>Terminar</button>
             </div>
