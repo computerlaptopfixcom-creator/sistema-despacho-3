@@ -793,6 +793,19 @@ tbody tr.clickable {
   font-size: 1rem;
 }
 .bk-btn-confirm:hover:not(:disabled) { background: #15803d; }
+.bk-btn-secondary {
+  background: #fff;
+  color: #3b82f6;
+  border: 2px solid #3b82f6;
+}
+.bk-btn-secondary:hover { background: #eff6ff; }
+
+.bk-success-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
 /* ── Success ── */
 .bk-success {
