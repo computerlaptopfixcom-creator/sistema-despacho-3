@@ -58,6 +58,13 @@ export default function AgendarPublico() {
       .catch(() => {});
   }, []);
 
+  // Auto-select employee if only one is available for the service
+  useEffect(() => {
+    if (atiendeOptions.length === 1 && !atiendeSeleccionado) {
+      setAtiendeSeleccionado(atiendeOptions[0]);
+    }
+  }, [atiendeOptions, atiendeSeleccionado]);
+
   // Load booked slots
   useEffect(() => {
     fetch('/api/appointments')
@@ -316,15 +323,32 @@ export default function AgendarPublico() {
                 </div>
               )}
 
-              {atiendeOptions.length > 1 && (
+              {atiendeOptions.length > 0 && (
                 <div className="bk-field" style={{ marginTop: 24 }}>
-                  <label>Asesor:</label>
-                  <select value={atiendeSeleccionado} onChange={e => setAtiendeSeleccionado(e.target.value)}>
-                    <option value="">Cualquier asesor disponible</option>
-                    {atiendeOptions.map(a => (
-                      <option key={a} value={a}>{getEmployeeName(a)}</option>
-                    ))}
-                  </select>
+                  <label>{atiendeOptions.length > 1 ? 'Asesor:' : 'Asesor asignado:'}</label>
+                  <div className="bk-employee-list">
+                    {atiendeOptions.map(a => {
+                      const name = getEmployeeName(a);
+                      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+                      const isSelected = atiendeSeleccionado === a;
+                      return (
+                        <div 
+                          key={a} 
+                          className={`bk-employee-card ${isSelected ? 'selected' : ''}`}
+                          onClick={() => setAtiendeSeleccionado(a)}
+                        >
+                          <div className="bk-avatar">{initials}</div>
+                          <div className="bk-employee-info">
+                            <span className="bk-employee-name">{name}</span>
+                            <span className="bk-employee-badge">Especialista</span>
+                          </div>
+                          <div className="bk-employee-check">
+                            <Check size={14} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
