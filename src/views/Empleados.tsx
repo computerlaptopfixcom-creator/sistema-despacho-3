@@ -23,11 +23,13 @@ export default function Empleados() {
   const [showPass, setShowPass] = useState(false);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [roleFilter, setRoleFilter] = useState<string>('todos');
 
-  const filteredUsers = db.users.filter((u: any) =>
-    u.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = db.users.filter((u: any) => {
+    const searchMatch = u.nombre.toLowerCase().includes(searchTerm.toLowerCase()) || u.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const roleMatch = roleFilter === 'todos' || u.rol === roleFilter;
+    return searchMatch && roleMatch;
+  });
 
   const openAdd = () => {
     setForm(emptyForm);
@@ -107,9 +109,9 @@ export default function Empleados() {
           </div>
         </div>
 
-        <div className="header-actions">
-          <div className="search-box">
-            <Search size={18} />
+        <div className="header-actions" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+          <div className="search-bar">
+            <div className="search-icon"><Search size={18} /></div>
             <input
               type="text"
               placeholder="Buscar empleados..."
@@ -117,12 +119,18 @@ export default function Empleados() {
               onChange={(e: any) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn-primary" onClick={openAdd}>
+          <button className="btn btn-primary" onClick={openAdd}>
             <Plus size={18} />
             <span>Nuevo Empleado</span>
           </button>
         </div>
       </header>
+
+      <div className="emp-filters" style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        <button className={`btn btn-sm ${roleFilter === 'todos' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setRoleFilter('todos')}>Todos</button>
+        <button className={`btn btn-sm ${roleFilter === 'admin' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setRoleFilter('admin')}>Administradores</button>
+        <button className={`btn btn-sm ${roleFilter === 'contador' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setRoleFilter('contador')}>Contadores</button>
+      </div>
 
       <div className="content-card">
         <div className="table-responsive">
@@ -180,29 +188,53 @@ export default function Empleados() {
                   <td>
                     <div className="emp-actions">
                       <button className="emp-btn-edit" onClick={() => openEdit(user)} title="Editar">
-                        <Edit2 size={15} />
+                        <Edit2 size={15} /> <span className="action-label">Editar</span>
                       </button>
-                      <div style={{ position: 'relative' }}>
-                        <button className="emp-btn-menu" onClick={() => setMenuOpen(menuOpen === user.id ? null : user.id)}>
-                          <MoreHorizontal size={16} />
-                        </button>
-                        {menuOpen === user.id && (
-                          <div className="emp-dropdown">
-                            <button onClick={() => openEdit(user)}>
-                              <Edit2 size={14} /> Editar
-                            </button>
-                            <button className="emp-dropdown-danger" onClick={() => setConfirmDelete(user.id)}>
-                              <Trash2 size={14} /> Eliminar
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                      <button className="emp-btn-danger" style={{ border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', borderRadius: '6px', padding: '6px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }} onClick={() => setConfirmDelete(user.id)} title="Eliminar">
+                        <Trash2 size={15} /> <span className="action-label">Eliminar</span>
+                      </button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          {/* ── Mobile Layout (Cards) ── */}
+          <div className="emp-mobile-list">
+            {filteredUsers.length === 0 && (
+              <div style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>
+                No hay empleados registrados.
+              </div>
+            )}
+            {filteredUsers.map((user: any) => (
+              <div key={`m-${user.id}`} className="emp-mobile-card">
+                <div className="emp-mc-header">
+                  <div className="emp-avatar">{user.nombre.charAt(0).toUpperCase()}</div>
+                  <div>
+                    <div className="emp-name">{user.nombre}</div>
+                    <div className="emp-role">{user.rol === 'admin' ? 'Administrador' : 'Contador'}</div>
+                  </div>
+                </div>
+                <div className="emp-mc-body">
+                  <div><span style={{opacity:0.6}}>📞</span> {user.telefono || '—'}</div>
+                  <div><span style={{opacity:0.6}}>✉️</span> {user.email}</div>
+                  <div className="emp-mc-badges">
+                    <span className={`emp-status-badge ${user.visible ? 'visible' : 'hidden'}`}>{user.visible ? 'Visible' : 'Oculto'}</span>
+                    <span className={`emp-dispo ${user.disponibilidad?.toLowerCase().replace(/\s/g, '-') || 'disponible'}`}>{user.disponibilidad || 'Disponible'}</span>
+                  </div>
+                </div>
+                <div className="emp-mc-actions">
+                  <button className="emp-btn-edit" onClick={() => openEdit(user)}>
+                    <Edit2 size={15} /> Editar
+                  </button>
+                  <button className="emp-btn-danger" style={{ border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', borderRadius: '6px', padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flex: 1, cursor: 'pointer' }} onClick={() => setConfirmDelete(user.id)}>
+                    <Trash2 size={15} /> Eliminar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -447,6 +479,36 @@ export default function Empleados() {
         .emp-btn-menu:hover {
           background: #f8fafc;
         }
+
+        /* ── Acciones y Mobile ── */
+        .emp-mobile-list { display: none; flex-direction: column; gap: 12px; }
+        .action-label { display: none; font-size: 13px; }
+        @media (min-width: 1024px) {
+           .action-label { display: inline; }
+           .emp-actions { gap: 12px; }
+        }
+        @media (max-width: 768px) {
+          .data-table { display: none; }
+          .emp-mobile-list { display: flex; }
+          .header-actions { flex-direction: column; align-items: stretch; width: 100%; }
+          .header-actions .btn { width: 100%; justify-content: center; }
+          .emp-filters { flex-wrap: wrap; }
+          .emp-filters .btn { flex: 1; min-width: calc(50% - 8px); justify-content: center; }
+        }
+        .emp-mobile-card {
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px;
+          background: #fff;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .emp-mc-header { display: flex; align-items: center; gap: 12px; }
+        .emp-mc-body { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #475569; }
+        .emp-mc-badges { display: flex; gap: 8px; margin-top: 4px; }
+        .emp-mc-actions { display: flex; gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
+        .emp-mc-actions button { flex: 1; justify-content: center; }
 
         /* ── Dropdown ── */
         .emp-dropdown {
