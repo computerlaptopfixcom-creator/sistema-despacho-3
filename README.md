@@ -17,7 +17,8 @@ El sistema cuenta con un modelo de doble acceso para garantizar la privacidad y 
 > **Nota para Empleados Seed:** Si se usan los datos de prueba autogenerados, los empleados por defecto tienen la contraseña `password123`.
 
 ### 2. Características Principales del CRM
-- **Gestión de Clientes (Expediente Integral)**: Expedientes centralizados con historial clínico/fiscal, ahora con captura estandarizada de Correo Electrónico, CURP y Número de Seguridad Social (NSS) desde múltiples vistas de "Alta Rápida".
+- **Expediente Integral**: Gestión de clientes con historial clínico/fiscal, ahora con captura estandarizada de Correo Electrónico, CURP y Número de Seguridad Social (NSS) desde múltiples vistas de "Alta Rápida".
+- **Responsive Admin UI**: El dashboard de administración ha sido optimizado bajo lineamientos "Mobile-First", contando ahora con un Menú Flotante (Hamburguesa) para dispositivos móviles, liberando espacio para las tablas de datos pesadas.
 - **Agenda Dual Avanzada**:
   - **Vista Calendario Mensual** interactiva, indicando la ubicación e identificadores de color por estado.
   - **Vista Lista de Reservas** con tabla rica, menús desplegables para Estado y etiquetas de empleados designados.
