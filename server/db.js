@@ -107,8 +107,8 @@ export async function initDB(retries = 5) {
           ('Consulta fiscal', 'Fiscal', 'Consulta especializada en temas fiscales', 500, 'Gerardo Huerta / Christian Huerta', true),
           ('Consulta en pensiones', 'Pensiones', 'Estudio sobre semanas y modalidad', 500, 'Gerardo Huerta', true),
           ('Consulta contable', 'Fiscal', 'Análisis contable', 500, 'Christian Huerta', true),
-          ('Consulta legal y civil', 'General', 'Asesoría en asuntos legales y civiles', 500, 'Christian Huerta', true),
-          ('Consulta financiera', 'General', 'Análisis de temas financieros', 500, 'Gerardo Huerta', true);
+          ('Consulta en asuntos legales y civiles', 'General', 'Asesoría en asuntos legales y civiles', 500, 'Christian Huerta', true),
+          ('Consulta en asuntos financieros', 'General', 'Análisis de temas financieros', 500, 'Gerardo Huerta', true);
         `);
       }
 

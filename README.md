@@ -18,10 +18,12 @@ El sistema cuenta con un modelo de doble acceso para garantizar la privacidad y 
 
 ### 2. Características Principales del CRM
 - **Gestión de Clientes**: Expedientes centralizados con historial clínico/fiscal.
-- **Control de Visitas**: Registro de consultas detallado con servicios brindados.
+- **Agenda Dual Avanzada**:
+  - **Vista Calendario Mensual** interactiva, indicando la ubicación e identificadores de color por estado.
+  - **Vista Lista de Reservas** con tabla rica, menús desplegables para Estado y etiquetas de empleados designados.
+- **Control de Visitas**: Registro detallado con servicios brindados y sub-totales.
 - **Finanzas y Pagos**: Seguimiento de abonos, saldos pendientes y generación de **Recibos PDF**.
-- **Catálogo de Servicios**: Precios y descripciones actualizables.
-
+- **Catálogo de Servicios Interactivo**: Creación, edición y borrado con despliegue de **iconos visuales dinámicos** según la categoría y servicio mapeado.
 ### 3. Portal de Clientes (Público)
 - **Ruta Autónoma**: `/agendar`
 - **Mobile-first**: Formulario de 3 pasos diseñado para facilidad de uso (edad 55-60+).

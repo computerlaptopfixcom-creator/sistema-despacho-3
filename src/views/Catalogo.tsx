@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, Save, X, Package } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Package, FileSearch, ScrollText, BookOpenCheck, Scale, Coins } from 'lucide-react';
 import { useGlobalState } from '../context/GlobalState';
 import type { Service } from '../types';
 
@@ -95,6 +95,23 @@ export default function Catalogo() {
     return map[cat] || 'badge-blue';
   };
 
+  const getServiceIcon = (nombre: string) => {
+    const n = nombre.toLowerCase();
+    let Icon = Package;
+    if (n.includes('fiscal')) Icon = FileSearch;
+    else if (n.includes('pensiones')) Icon = ScrollText;
+    else if (n.includes('contable')) Icon = BookOpenCheck;
+    else if (n.includes('legal') || n.includes('civil')) Icon = Scale;
+    else if (n.includes('financiero')) Icon = Coins;
+
+    return (
+      <div style={{ position: 'relative', width: 34, height: 34, borderRadius: '50%', background: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
+        <Icon size={18} strokeWidth={1.5} />
+        <div style={{ position: 'absolute', bottom: 0, right: -2, width: 12, height: 12, borderRadius: '50%', background: '#3b82f6', border: '2px solid white' }} />
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className="page-header">
@@ -141,9 +158,9 @@ export default function Catalogo() {
                 {filtered.map(s => (
                   <tr key={s.id} style={{ opacity: s.activo ? 1 : 0.5 }}>
                     <td style={{ fontWeight: 600 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Package size={16} style={{ color: 'var(--accent-blue)', flexShrink: 0 }} />
-                        {s.nombre}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        {getServiceIcon(s.nombre)}
+                        <span style={{ fontSize: '0.95rem' }}>{s.nombre}</span>
                       </div>
                     </td>
                     <td><span className={`badge ${getCatBadge(s.categoria)}`}>{s.categoria}</span></td>
