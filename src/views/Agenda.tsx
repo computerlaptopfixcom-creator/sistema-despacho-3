@@ -9,7 +9,7 @@ export default function Agenda() {
   const navigate = useNavigate();
   const isContador = currentUser?.rol === 'contador';
 
-  const [activeTab, setActiveTab] = useState<'calendario' | 'lista'>('calendario');
+  const [activeTab, setActiveTab] = useState<'calendario' | 'lista'>('lista');
 
   // --- CALENDAR STATE ---
   const [currentDate, setCurrentDate] = useState(() => {
@@ -114,8 +114,8 @@ export default function Agenda() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 24, paddingBottom: 20 }}>
       {/* ─── HEADER ─── */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 16, marginBottom: 8 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
           <h1 style={{ fontSize: '1.5rem', margin: 0 }}>Calendario</h1>
           <div style={{ display: 'flex', background: 'var(--bg-input)', padding: 4, borderRadius: 'var(--radius-lg)' }}>
             <button
@@ -144,7 +144,7 @@ export default function Agenda() {
         </div>
         
         {/* RIGHT CONTROLS */}
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
           {activeTab === 'calendario' ? (
             <>
               <button className="btn btn-outline btn-sm" onClick={goToToday} style={{ borderRadius: 20, padding: '8px 16px' }}>Hoy</button>
@@ -152,7 +152,7 @@ export default function Agenda() {
                 <button className="btn btn-outline btn-sm" onClick={goToPrevMonth} style={{ padding: '8px', border: 'none' }}><ChevronLeft size={20} color="var(--text-muted)"/></button>
                 <button className="btn btn-outline btn-sm" onClick={goToNextMonth} style={{ padding: '8px', border: 'none' }}><ChevronRight size={20} color="var(--text-muted)" /></button>
               </div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 600, minWidth: 120, textAlign: 'center', color: 'var(--text-secondary)' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, minWidth: 'auto', textAlign: 'center', color: 'var(--text-secondary)' }}>
                 {currentMonthDate.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })}
               </div>
               <select className="input" style={{ padding: '8px 16px', height: 38, width: 100, borderRadius: 8 }}>
@@ -160,16 +160,16 @@ export default function Agenda() {
               </select>
             </>
           ) : (
-            <div style={{ display: 'flex', gap: 12 }}>
-              <div className="search-bar" style={{ width: 250, margin: 0, borderRadius: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+              <div className="search-bar" style={{ flex: 1, minWidth: 200, margin: 0, borderRadius: 8 }}>
                 <Search size={16} />
-                <input type="text" placeholder="Buscar reservas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+                <input type="text" placeholder="Buscar reservas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ width: '100%' }} />
               </div>
               <button className="btn btn-outline btn-sm" style={{ borderRadius: 8 }}><Filter size={16} /></button>
               <button className="btn btn-outline btn-sm" style={{ borderRadius: 8 }}><Download size={16} /></button>
             </div>
           )}
-          <button className="btn btn-primary btn-sm" onClick={() => setShowNewAppt(true)} style={{ borderRadius: 8 }}>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowNewAppt(true)} style={{ borderRadius: 8, whiteSpace: 'nowrap' }}>
             <Plus size={16} /> {activeTab === 'calendario' ? 'Añadir' : 'Reservar cita'}
           </button>
         </div>
@@ -228,10 +228,10 @@ export default function Agenda() {
       {/* ─── VISTA LISTA (RESERVAS) ─── */}
       {activeTab === 'lista' && (
         <div className="card" style={{ flex: 1, padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: 'var(--radius-lg)' }}>
-          <div style={{ display: 'flex', gap: 32, padding: '0 32px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
-            <div style={{ padding: '20px 0', borderBottom: '2px solid var(--text-primary)', color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.9rem' }}>Citas</div>
-            <div style={{ padding: '20px 0', color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer' }}>Paquetes</div>
-            <div style={{ padding: '20px 0', color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer' }}>Eventos</div>
+          <div style={{ display: 'flex', overflowX: 'auto', gap: 24, padding: '0 16px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
+            <div style={{ padding: '20px 0', borderBottom: '2px solid var(--text-primary)', color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Citas</div>
+            <div style={{ padding: '20px 0', color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>Paquetes</div>
+            <div style={{ padding: '20px 0', color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>Eventos</div>
           </div>
           
           <div style={{ padding: '16px 24px', display:'flex', gap: 16, alignItems: 'center', borderBottom: '1px solid var(--border-color)' }}>
