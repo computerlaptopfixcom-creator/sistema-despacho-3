@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Check, ChevronLeft, ChevronRight, CalendarDays, Clock, UserCircle, ClipboardCheck } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, CalendarDays, Clock, UserCircle, ClipboardCheck, Wallet } from 'lucide-react';
 
 type BookedSlot = { fecha: string; hora: string };
 type ServiceData = { id: string; nombre: string; precioBase: number; duracion: string; atiende: string; activo: boolean };
@@ -12,7 +12,7 @@ const STEPS = [
   { key: 'servicio', label: 'Selección del servicio', shortLabel: 'Servicio', icon: ClipboardCheck },
   { key: 'fecha', label: 'Fecha y Hora', shortLabel: 'Fecha', icon: CalendarDays },
   { key: 'datos', label: 'Tu Información', shortLabel: 'Info', icon: UserCircle },
-  { key: 'confirmar', label: 'Confirmar', shortLabel: 'Confirmar', icon: Check },
+  { key: 'pagos', label: 'Pagos', shortLabel: 'Pagos', icon: Wallet },
 ];
 
 export default function AgendarPublico() {
@@ -32,6 +32,8 @@ export default function AgendarPublico() {
   const [apellido, setApellido] = useState('');
   const [telefono, setTelefono] = useState('');
   const [email, setEmail] = useState('');
+  // Step 4: Payment
+  const [metodoPago, setMetodoPago] = useState('');
   // State
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
@@ -131,6 +133,7 @@ export default function AgendarPublico() {
     if (s === 0) return !!selectedServiceId && (atiendeOptions.length <= 1 || !!atiendeSeleccionado);
     if (s === 1) return !!selectedDate && !!selectedHora;
     if (s === 2) return !!nombre.trim() && !!apellido.trim() && !!telefono.trim() && !!email.trim();
+    if (s === 3) return !!metodoPago;
     return false;
   };
 
@@ -149,6 +152,7 @@ export default function AgendarPublico() {
           fecha: selectedDate,
           hora: selectedHora,
           motivo: selectedService?.nombre || 'Consulta general',
+          metodoPago,
           estado: 'Programada',
         }),
       });
@@ -164,6 +168,7 @@ export default function AgendarPublico() {
     setStep(0); setSelectedServiceId(''); setAtiendeSeleccionado('');
     setSelectedDate(''); setSelectedHora('');
     setNombre(''); setApellido(''); setTelefono(''); setEmail('');
+    setMetodoPago('');
     setDone(false);
   };
 
@@ -454,25 +459,48 @@ export default function AgendarPublico() {
             </div>
           )}
 
-          {/* ══ Step 3: Confirmar ══ */}
+          {/* ══ Step 3: Pagos ══ */}
           {step === 3 && (
             <div className="bk-content">
-              <div className="bk-confirm-box">
-                <h3>Resumen de tu cita</h3>
-                <div className="bk-ticket">
-                  <div className="bk-ticket-row"><span>Servicio:</span><strong>{selectedService?.nombre}</strong></div>
-                  <div className="bk-ticket-row"><span>Precio:</span><strong className="bk-price">{Number(selectedService?.precioBase || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</strong></div>
-                    <div className="bk-ticket-row"><span>Asesor:</span><strong>{getEmployeeName(atiendeSeleccionado || (atiendeOptions.length === 1 ? atiendeOptions[0] : 'Por asignar'))}</strong></div>
-                  <hr />
-                  <div className="bk-ticket-row"><span>Fecha:</span><strong>{new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</strong></div>
-                  <div className="bk-ticket-row"><span>Hora:</span><strong>{formatHourRange(selectedHora)}</strong></div>
-                  <hr />
-                  <div className="bk-ticket-row"><span>Nombre:</span><strong>{nombre} {apellido}</strong></div>
-                  <div className="bk-ticket-row"><span>Correo:</span><strong>{email}</strong></div>
-                  <div className="bk-ticket-row"><span>Teléfono:</span><strong>+52 {telefono}</strong></div>
+              {/* Resumen */}
+              <h3 className="bk-section-title">Resumen</h3>
+              <div className="bk-invoice-box">
+                <div className="bk-invoice-header">Servicios</div>
+                <div className="bk-invoice-row">
+                  <span>{selectedService?.nombre} ({Number(selectedService?.precioBase || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}) x 1 persona</span>
+                  <strong>{Number(selectedService?.precioBase || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</strong>
                 </div>
-                <p className="bk-confirm-note">El pago se realizará en el sitio al momento de su cita.</p>
               </div>
+              <div className="bk-invoice-total">
+                <span>Importe Total:</span>
+                <strong className="bk-price">{Number(selectedService?.precioBase || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}</strong>
+              </div>
+
+              {/* Forma de pago */}
+              <h3 className="bk-section-title" style={{ marginTop: 28 }}>Forma de pago</h3>
+              <div className="bk-payment-methods">
+                <button
+                  className={`bk-payment-card ${metodoPago === 'efectivo' ? 'selected' : ''}`}
+                  onClick={() => setMetodoPago('efectivo')}
+                >
+                  <span className="bk-payment-icon">💵</span>
+                  <span className="bk-payment-label">Efectivo</span>
+                </button>
+                <button
+                  className={`bk-payment-card ${metodoPago === 'tarjeta' ? 'selected' : ''}`}
+                  onClick={() => setMetodoPago('tarjeta')}
+                >
+                  <span className="bk-payment-icon">💳</span>
+                  <span className="bk-payment-label">Tarjeta</span>
+                </button>
+              </div>
+              {metodoPago && (
+                <p className="bk-payment-note">
+                  {metodoPago === 'efectivo'
+                    ? 'El pago se realizará en efectivo al momento de su cita.'
+                    : 'El pago se realizará con tarjeta al momento de su cita.'}
+                </p>
+              )}
             </div>
           )}
 
@@ -492,7 +520,7 @@ export default function AgendarPublico() {
                 disabled={sending}
                 onClick={handleSubmit}
               >
-                {sending ? 'Agendando...' : '✓ Confirmar Cita'}
+                {sending ? 'Agendando...' : '✓ Agendar Cita'}
               </button>
             )}
           </div>

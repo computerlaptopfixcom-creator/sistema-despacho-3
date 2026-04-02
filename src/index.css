@@ -1080,3 +1080,98 @@ tbody tr.clickable {
   padding: 10px 12px;
   font-size: .95rem;
 }
+
+/* ── Pagos Step: Invoice & Payment ── */
+.bk-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 14px;
+}
+.bk-invoice-box {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  background: #fff;
+}
+.bk-invoice-header {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.bk-invoice-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  font-size: 0.92rem;
+  color: #334155;
+}
+.bk-invoice-row span {
+  flex: 1;
+}
+.bk-invoice-row strong {
+  white-space: nowrap;
+  font-weight: 700;
+}
+.bk-invoice-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+.bk-invoice-total .bk-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #3b82f6;
+}
+
+/* Payment method cards */
+.bk-payment-methods {
+  display: flex;
+  gap: 12px;
+}
+.bk-payment-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 180ms ease;
+}
+.bk-payment-card:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+.bk-payment-card.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+.bk-payment-icon {
+  font-size: 1.6rem;
+}
+.bk-payment-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #334155;
+}
+.bk-payment-note {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: #64748b;
+  font-style: italic;
+}
