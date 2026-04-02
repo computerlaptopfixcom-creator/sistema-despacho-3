@@ -141,7 +141,7 @@ export default function Agenda() {
       {/* ─── HEADER ─── */}
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 16, marginBottom: 8 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-          <h1 style={{ fontSize: '1.5rem', margin: 0 }}>Calendario</h1>
+          <h1 style={{ fontSize: '1.5rem', margin: 0 }}>{activeTab === 'calendario' ? 'Calendario' : 'Agenda'}</h1>
           <div style={{ display: 'flex', background: 'var(--bg-input)', padding: 4, borderRadius: 'var(--radius-lg)' }}>
             <button
               onClick={() => setActiveTab('calendario')}
@@ -185,10 +185,10 @@ export default function Agenda() {
               </select>
             </>
           ) : (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-              <div className="search-bar" style={{ flex: 1, minWidth: 200, margin: 0, borderRadius: 8 }}>
-                <Search size={16} />
-                <input type="text" placeholder="Buscar reservas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ width: '100%' }} />
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+              <div style={{ position: 'relative', minWidth: 220 }}>
+                <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input type="text" placeholder="Buscar reservas..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} style={{ width: '100%', padding: '8px 12px 8px 36px', borderRadius: 8, border: '1px solid var(--border-color)', background: 'var(--bg-input)', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box' }} />
               </div>
               <button className="btn btn-outline btn-sm" style={{ borderRadius: 8 }}><Filter size={16} /></button>
               <button className="btn btn-outline btn-sm" style={{ borderRadius: 8 }}><Download size={16} /></button>
@@ -253,20 +253,13 @@ export default function Agenda() {
       {/* ─── VISTA LISTA (RESERVAS) ─── */}
       {activeTab === 'lista' && (
         <div className="card" style={{ flex: 1, padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: 'var(--radius-lg)' }}>
-          <div style={{ display: 'flex', overflowX: 'auto', gap: 24, padding: '0 16px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)' }}>
-            <div style={{ padding: '20px 0', borderBottom: '2px solid var(--text-primary)', color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Citas</div>
-            <div style={{ padding: '20px 0', color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>Paquetes</div>
-            <div style={{ padding: '20px 0', color: 'var(--text-muted)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer', whiteSpace: 'nowrap' }}>Eventos</div>
-          </div>
-          
           <div style={{ padding: '16px 24px', display:'flex', gap: 16, alignItems: 'center', borderBottom: '1px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', border: '1px solid var(--border-color)', borderRadius: 8, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              <Calendar size={14} /> abar 1, 2026 - abr 1, 2027
-            </div>
+            <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Citas programadas</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>({authorizedAppointments.length} reservas)</span>
           </div>
 
           <div style={{ overflowX: 'auto', flex: 1 }}>
-            <table className="table" style={{ width: '100%', minWidth: 1100, borderCollapse: 'collapse' }}>
+            <table className="table" style={{ width: '100%', minWidth: 900, borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.70rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '16px 24px', width: 40 }}><input type="checkbox" /></th>
